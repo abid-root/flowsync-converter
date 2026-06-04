@@ -416,5 +416,117 @@ function bindPreviewTools() {
 
 init();
 
+/* Queue see more controller start */
+function setupQueueSeeMore() {
+  const panel = document.getElementById('queuePanel');
+  if (!panel) return;
 
+  const getList = () => panel.querySelector('.queue-list');
+  const getActions = () => panel.querySelector('.queue-actions');
+
+  function refreshQueueLimit() {
+    const list = getList();
+    const actions = getActions();
+    if (!list || !actions) return;
+
+    const rows = Array.from(list.querySelectorAll('.queue-row'));
+    const total = rows.length;
+
+    panel.classList.toggle('queue-has-more', total > 3);
+
+    let button = document.getElementById('seeMoreQueueButton');
+
+    if (total <= 3) {
+      panel.classList.remove('queue-expanded');
+      if (button) button.remove();
+      return;
+    }
+
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'seeMoreQueueButton';
+      button.className = 'line-button queue-see-more';
+      button.type = 'button';
+
+      const firstChild = actions.firstElementChild;
+      if (firstChild && firstChild.nextSibling) {
+        actions.insertBefore(button, firstChild.nextSibling);
+      } else {
+        actions.prepend(button);
+      }
+
+      button.addEventListener('click', () => {
+        panel.classList.toggle('queue-expanded');
+        refreshQueueLimit();
+      });
+    }
+
+    const expanded = panel.classList.contains('queue-expanded');
+    button.textContent = expanded ? 'Show less' : `See more (${total - 3})`;
+    button.setAttribute('aria-expanded', String(expanded));
+  }
+
+  const list = getList();
+  if (list) {
+    const observer = new MutationObserver(refreshQueueLimit);
+    observer.observe(list, { childList: true });
+  }
+
+  refreshQueueLimit();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupQueueSeeMore);
+} else {
+  setupQueueSeeMore();
+}
+/* Queue see more controller end */
+
+/* Click empty upload area to choose files start */
+function setupWholeDropBoxClick() {
+  const uploadPanel =
+    document.getElementById('uploadPanel') ||
+    document.querySelector('.upload-panel') ||
+    document.querySelector('.drop-zone') ||
+    document.querySelector('.upload-box') ||
+    document.querySelector('.upload-zone');
+
+  if (!uploadPanel) return;
+
+  const fileInput =
+    document.getElementById('fileInput') ||
+    document.querySelector('input[type="file"]');
+
+  if (!fileInput) return;
+
+  uploadPanel.addEventListener('click', event => {
+    const ignored = event.target.closest(
+      'button, a, input, select, textarea, label, .upload-menu, .upload-menu *'
+    );
+
+    if (ignored) return;
+
+    fileInput.click();
+  });
+
+  uploadPanel.addEventListener('dragover', event => {
+    event.preventDefault();
+    uploadPanel.classList.add('is-dragging');
+  });
+
+  uploadPanel.addEventListener('dragleave', () => {
+    uploadPanel.classList.remove('is-dragging');
+  });
+
+  uploadPanel.addEventListener('drop', () => {
+    uploadPanel.classList.remove('is-dragging');
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupWholeDropBoxClick);
+} else {
+  setupWholeDropBoxClick();
+}
+/* Click empty upload area to choose files end */
 

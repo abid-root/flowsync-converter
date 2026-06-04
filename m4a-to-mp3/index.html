@@ -18,7 +18,7 @@
           <span class="brand-text"><strong>FlowSync</strong><span>file forge</span></span>
         </a>
         <nav class="nav-links" aria-label="Main navigation">
-          <button type="button" data-open-tools>Tools</button>
+          <button type="button" data-open-tools>More tools</button>
           <a href="#api">API</a>
           <a href="#pricing">Pricing</a>
           <a href="#blog">Blog</a>
@@ -37,7 +37,19 @@
           <h1 id="pageTitle">PNG to WEBP Converter</h1>
           <p id="pageDescription">Convert files with smart output options, clean file handling, and simple settings.</p>
           <div class="hero-actions">
-            <div class="service-switcher">
+            <div class="hero-cta-grid" aria-label="Quick actions">
+  <button class="hero-action-card guide-card" type="button" onclick="document.getElementById('uploadPanel')?.scrollIntoView({behavior:'smooth', block:'center'})">
+    <span>Guide</span>
+    <strong>Upload file</strong>
+    <small>Choose output, adjust settings, then convert.</small>
+  </button>
+  <button class="hero-action-card tools-card is-empty" type="button" data-open-tools aria-label="Open more tools">
+    <span>More tools</span>
+    <strong>&nbsp;</strong>
+    <small>&nbsp;</small>
+  </button>
+</div>
+<div class="service-switcher">
               <button class="service-button" id="serviceButton" type="button">
                 <span>Service</span>
                 <strong id="serviceCurrent">Images</strong>
@@ -201,6 +213,7 @@
   <script type="module" src="../assets/js/app.js"></script>
 </body>
 </html>
+
 
 
 
