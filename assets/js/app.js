@@ -1,0 +1,371 @@
+﻿import { categories, categoryDefaults, conversions, formats } from './data.js';
+import { initialStateFromPath, updateBrowserUrl, updateMeta } from './router.js';
+import { createQueueItems } from './upload.js';
+import {
+  renderFormatInfo,
+  renderFormatPicker,
+  renderHero,
+  renderOptionsModal,
+  renderQueue,
+  renderServiceMenu,
+  renderToolsModal,
+  renderToolsPreview
+} from './ui.js';
+
+const state = {
+  ...initialStateFromPath(),
+  queue: [],
+  picker: {
+    mode: 'from',
+    search: '',
+    activeCategory: null
+  },
+  activeOptionsId: null
+};
+
+const $ = selector => document.querySelector(selector);
+const elements = {
+  app: document.body,
+  themeToggle: $('#themeToggle'),
+  serviceButton: $('#serviceButton'),
+  serviceCurrent: $('#serviceCurrent'),
+  serviceMenu: $('#serviceMenu'),
+  kicker: $('#pageKicker'),
+  title: $('#pageTitle'),
+  description: $('#pageDescription'),
+  fromCard: $('#fromCard'),
+  toCard: $('#toCard'),
+  swapButton: $('#swapButton'),
+  uploadPanel: $('#uploadPanel'),
+  queuePanel: $('#queuePanel'),
+  queueList: $('#queueList'),
+  queueSummary: $('#queueSummary'),
+  fileInput: $('#fileInput'),
+  chooseFileButton: $('#chooseFileButton'),
+  addFileButton: $('#addFileButton'),
+  clearQueueButton: $('#clearQueueButton'),
+  convertButton: $('#convertButton'),
+  formatInfo: $('#formatInfo'),
+  toolsPreview: $('#toolsPreview'),
+  uploadMenuButton: $('#uploadMenuButton'),
+  uploadMenu: $('#uploadMenu'),
+
+  pickerBackdrop: $('#pickerBackdrop'),
+  picker: $('#formatPicker'),
+  pickerTitle: $('#pickerTitle'),
+  pickerSubtitle: $('#pickerSubtitle'),
+  pickerSearch: $('#pickerSearch'),
+  pickerCategories: $('#pickerCategories'),
+  pickerFormats: $('#pickerFormats'),
+  closePicker: $('#closePicker'),
+
+  optionsBackdrop: $('#optionsBackdrop'),
+  optionsModal: $('#optionsModal'),
+  optionsTitle: $('#optionsTitle'),
+  optionsForm: $('#optionsForm'),
+  optionsBody: $('#optionsBody'),
+  optionsSave: $('#optionsSave'),
+  closeOptions: $('#closeOptions'),
+
+  toolsBackdrop: $('#toolsBackdrop'),
+  toolsModal: $('#toolsModal'),
+  toolsModalBody: $('#toolsModalBody'),
+  openToolsButtons: document.querySelectorAll('[data-open-tools]'),
+  closeTools: $('#closeTools')
+};
+
+function init() {
+  const savedTheme = localStorage.getItem('flowsync-theme');
+  document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+  bindEvents();
+  renderAll(true);
+  if (window.location.pathname.replace(/^\/+|\/+$/g, '').split('/').pop() === 'tools') {
+    setTimeout(openTools, 150);
+  }
+}
+
+
+function bindEvents() {
+  elements.themeToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('flowsync-theme', html.dataset.theme || 'dark');
+  });
+
+  elements.serviceButton.addEventListener('click', () => {
+    elements.serviceMenu.hidden = !elements.serviceMenu.hidden;
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.service-switcher')) elements.serviceMenu.hidden = true;
+    if (!event.target.closest('.upload-split')) elements.uploadMenu.hidden = true;
+  });
+
+  elements.fromCard.addEventListener('click', () => openPicker('from'));
+  elements.toCard.addEventListener('click', () => openPicker('to'));
+  elements.swapButton.addEventListener('click', swapFormats);
+
+  elements.chooseFileButton.addEventListener('click', () => elements.fileInput.click());
+  elements.addFileButton.addEventListener('click', () => elements.fileInput.click());
+  elements.fileInput.addEventListener('change', event => handleFiles(event.target.files));
+
+  elements.uploadPanel.addEventListener('dragover', event => {
+    event.preventDefault();
+    elements.uploadPanel.classList.add('dragging');
+  });
+  elements.uploadPanel.addEventListener('dragleave', () => elements.uploadPanel.classList.remove('dragging'));
+  elements.uploadPanel.addEventListener('drop', event => {
+    event.preventDefault();
+    elements.uploadPanel.classList.remove('dragging');
+    handleFiles(event.dataTransfer.files);
+  });
+
+  elements.uploadMenuButton.addEventListener('click', event => {
+    event.stopPropagation();
+    elements.uploadMenu.hidden = !elements.uploadMenu.hidden;
+  });
+  elements.uploadMenu.querySelectorAll('[data-upload-option]').forEach(button => {
+    button.addEventListener('click', () => {
+      const option = button.dataset.uploadOption;
+      elements.uploadMenu.hidden = true;
+      if (option === 'computer') elements.fileInput.click();
+      else alert(`${button.textContent.trim()} can be connected later with an API integration.`);
+    });
+  });
+
+  elements.clearQueueButton.addEventListener('click', () => {
+    state.queue = [];
+    elements.fileInput.value = '';
+    renderAll();
+  });
+
+  elements.convertButton.addEventListener('click', convertOrDownload);
+
+  elements.closePicker.addEventListener('click', closePicker);
+  elements.pickerBackdrop.addEventListener('click', closePicker);
+  elements.pickerSearch.addEventListener('input', () => {
+    state.picker.search = elements.pickerSearch.value;
+    renderPicker();
+  });
+
+  elements.closeOptions.addEventListener('click', closeOptions);
+  elements.optionsBackdrop.addEventListener('click', closeOptions);
+  elements.optionsForm.addEventListener('submit', event => event.preventDefault());
+
+  elements.openToolsButtons.forEach(button => button.addEventListener('click', openTools));
+  elements.closeTools.addEventListener('click', closeTools);
+  elements.toolsBackdrop.addEventListener('click', closeTools);
+
+  window.addEventListener('popstate', () => {
+    Object.assign(state, initialStateFromPath());
+    renderAll(true);
+  });
+}
+
+function renderAll(replaceUrl = false) {
+  normalizeState();
+  renderHero(state, elements);
+  renderServiceMenu(state, elements, setCategory);
+  renderFormatInfo(state, elements);
+  renderToolsPreview(elements);
+  renderQueue(state.queue, state, elements, {
+    output: updateQueueOutput,
+    options: openOptions,
+    remove: removeQueueItem
+  });
+  bindPreviewTools();
+  updateMeta(state.from, state.to);
+  updateBrowserUrl(state.from, state.to, replaceUrl);
+}
+
+function normalizeState() {
+  if (!formats[state.from]) {
+    [state.from, state.to] = categoryDefaults.image;
+    state.category = 'image';
+  }
+  const currentCategory = formats[state.from].category;
+  state.category = currentCategory === 'document' && state.from === 'pdf' ? 'pdf' : currentCategory;
+  const allowed = conversions[state.from] || [];
+  if (!allowed.includes(state.to)) state.to = allowed[0] || state.to;
+}
+
+function setCategory(category) {
+  const pair = categoryDefaults[category] || categoryDefaults.image;
+  state.category = category;
+  state.from = pair[0];
+  state.to = pair[1];
+  elements.serviceMenu.hidden = true;
+  renderAll();
+}
+
+function setFormats(from, to) {
+  state.from = from;
+  state.to = to || conversions[from]?.[0] || state.to;
+  renderAll();
+}
+
+function swapFormats() {
+  if (conversions[state.to]?.includes(state.from)) {
+    const nextFrom = state.to;
+    state.to = state.from;
+    state.from = nextFrom;
+  } else {
+    state.to = conversions[state.from]?.[0] || state.to;
+  }
+  renderAll();
+}
+
+function openPicker(mode) {
+  state.picker.mode = mode;
+  state.picker.search = '';
+  state.picker.activeCategory = state.category;
+  elements.pickerSearch.value = '';
+  elements.picker.hidden = false;
+  elements.pickerBackdrop.hidden = false;
+  renderPicker();
+  setTimeout(() => elements.pickerSearch.focus(), 60);
+}
+
+function closePicker() {
+  elements.picker.hidden = true;
+  elements.pickerBackdrop.hidden = true;
+}
+
+function renderPicker() {
+  renderFormatPicker({ mode: state.picker.mode, state, search: state.picker.search, activeCategory: state.picker.activeCategory }, elements, {
+    category: category => {
+      state.picker.activeCategory = category;
+      renderPicker();
+    },
+    select: format => {
+      if (state.picker.mode === 'from') {
+        state.from = format;
+        state.to = conversions[format]?.[0] || state.to;
+      } else {
+        state.to = format;
+      }
+      closePicker();
+      renderAll();
+    }
+  });
+}
+
+function handleFiles(fileList) {
+  if (!fileList || !fileList.length) return;
+  const remaining = Math.max(0, 10 - state.queue.length);
+  if (!remaining) {
+    alert('Free version supports up to 10 files per batch. Remove files or upgrade later.');
+    return;
+  }
+  const incoming = Array.from(fileList).slice(0, remaining);
+  if (fileList.length > remaining) {
+    alert(`Free version supports up to 10 files per batch. Added ${remaining} file${remaining === 1 ? '' : 's'}.`);
+  }
+  const items = createQueueItems(incoming, state);
+  if (items.length) {
+    const first = items[0];
+    if (formats[first.from]) {
+      state.from = first.from;
+      state.to = conversions[first.from]?.includes(state.to) ? state.to : (conversions[first.from]?.[0] || state.to);
+    }
+  }
+  state.queue = [...state.queue, ...items].slice(0, 10);
+  elements.fileInput.value = '';
+  renderAll();
+}
+
+function updateQueueOutput(id, output) {
+  const item = state.queue.find(entry => entry.id === id);
+  if (!item) return;
+  item.to = output;
+  item.status = 'ready';
+  renderAll(true);
+}
+
+function removeQueueItem(id) {
+  state.queue = state.queue.filter(item => item.id !== id);
+  renderAll(true);
+}
+
+function openOptions(id) {
+  const item = state.queue.find(entry => entry.id === id);
+  if (!item) return;
+  state.activeOptionsId = id;
+  renderOptionsModal(item, elements, data => {
+    item.settings = data;
+    closeOptions();
+    renderAll(true);
+  });
+}
+
+function closeOptions() {
+  elements.optionsModal.hidden = true;
+  elements.optionsBackdrop.hidden = true;
+  state.activeOptionsId = null;
+}
+
+function convertOrDownload() {
+  if (!state.queue.length) return;
+  const converted = state.queue.every(item => item.status === 'converted');
+  if (converted) {
+    downloadPlaceholder();
+    return;
+  }
+  state.queue.forEach(item => {
+    item.status = 'converting';
+    item.progress = 0;
+  });
+  renderAll(true);
+
+  let tick = 0;
+  const timer = setInterval(() => {
+    tick += 20;
+    state.queue.forEach(item => {
+      item.progress = Math.min(100, tick);
+      if (item.progress >= 100) item.status = 'converted';
+    });
+    renderAll(true);
+    if (tick >= 100) clearInterval(timer);
+  }, 260);
+}
+
+function downloadPlaceholder() {
+  const lines = state.queue.map(item => `${item.name} -> ${formats[item.to]?.label || item.to.toUpperCase()}`);
+  const blob = new Blob([
+    'FlowSync conversion placeholder\n',
+    'Connect the real conversion engine before production use.\n\n',
+    lines.join('\n')
+  ], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'flowsync-conversion-summary.txt';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function openTools() {
+  renderToolsModal(elements, (from, to) => {
+    closeTools();
+    setFormats(from, to);
+  }, category => {
+    closeTools();
+    setCategory(category);
+  });
+}
+
+function closeTools() {
+  elements.toolsModal.hidden = true;
+  elements.toolsBackdrop.hidden = true;
+}
+
+function bindPreviewTools() {
+  document.querySelectorAll('.mini-tool[data-category]').forEach(button => {
+    button.onclick = () => setCategory(button.dataset.category);
+  });
+}
+
+init();
+
+

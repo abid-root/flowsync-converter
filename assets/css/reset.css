@@ -1,0 +1,10 @@
+*, *::before, *::after { box-sizing: border-box; }
+html { color-scheme: dark; }
+html[data-theme='light'] { color-scheme: light; }
+body, h1, h2, h3, h4, p, figure, blockquote, dl, dd { margin: 0; }
+body { min-height: 100vh; text-rendering: optimizeSpeed; }
+a { color: inherit; text-decoration: none; }
+img, picture, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
