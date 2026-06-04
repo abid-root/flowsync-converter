@@ -1,0 +1,39 @@
+﻿/* Clean fixed nav */
+.site-header,
+header {
+  position: sticky !important;
+  top: 14px !important;
+  z-index: 9999 !important;
+  width: 100% !important;
+  pointer-events: none;
+}
+
+.site-header .topbar,
+header .topbar,
+.topbar {
+  position: relative !important;
+  z-index: 10000 !important;
+  pointer-events: auto;
+  background: rgba(25, 23, 35, 0.94) !important;
+  backdrop-filter: blur(22px) !important;
+  -webkit-backdrop-filter: blur(22px) !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.32) !important;
+}
+
+/* Give page content a little breathing room under sticky nav */
+.hero {
+  padding-top: 42px !important;
+}
+
+/* Normal dropdowns stay under nav */
+.upload-menu {
+  z-index: 80 !important;
+}
+
+/* Real modals still open above page content */
+#pickerBackdrop,
+#toolsBackdrop,
+#optionsBackdrop,
+.backdrop {
+  z-index: 9000 !important;
+}
