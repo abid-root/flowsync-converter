@@ -74,6 +74,48 @@ const elements = {
   closeTools: $('#closeTools')
 };
 
+
+let savedScrollY = 0;
+
+function secondaryScreenOpen() {
+  return [
+    elements.picker,
+    elements.optionsModal,
+    elements.toolsModal
+  ].some(screen => screen && screen.hidden === false);
+}
+
+function lockSecondaryScreenScroll() {
+  if (document.body.classList.contains('secondary-screen-locked')) return;
+
+  savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  document.body.dataset.lockScrollY = String(savedScrollY);
+  document.body.classList.add('secondary-screen-locked');
+
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${savedScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+}
+
+function unlockSecondaryScreenScroll() {
+  window.setTimeout(() => {
+    if (secondaryScreenOpen()) return;
+
+    const y = Number(document.body.dataset.lockScrollY || savedScrollY || 0);
+
+    document.body.classList.remove('secondary-screen-locked');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+
+    window.scrollTo(0, y);
+  }, 0);
+}
+
 function init() {
   const savedTheme = localStorage.getItem('flowsync-theme');
   document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
@@ -221,6 +263,7 @@ function openPicker(mode) {
   elements.pickerSearch.value = '';
   elements.picker.hidden = false;
   elements.pickerBackdrop.hidden = false;
+  lockSecondaryScreenScroll();
   renderPicker();
   setTimeout(() => elements.pickerSearch.focus(), 60);
 }
@@ -228,6 +271,7 @@ function openPicker(mode) {
 function closePicker() {
   elements.picker.hidden = true;
   elements.pickerBackdrop.hidden = true;
+  unlockSecondaryScreenScroll();
 }
 
 function renderPicker() {
@@ -290,6 +334,7 @@ function openOptions(id) {
   const item = state.queue.find(entry => entry.id === id);
   if (!item) return;
   state.activeOptionsId = id;
+  lockSecondaryScreenScroll();
   renderOptionsModal(item, elements, data => {
     item.settings = data;
     closeOptions();
@@ -301,6 +346,7 @@ function closeOptions() {
   elements.optionsModal.hidden = true;
   elements.optionsBackdrop.hidden = true;
   state.activeOptionsId = null;
+  unlockSecondaryScreenScroll();
 }
 
 function convertOrDownload() {
@@ -346,6 +392,7 @@ function downloadPlaceholder() {
 }
 
 function openTools() {
+  lockSecondaryScreenScroll();
   renderToolsModal(elements, (from, to) => {
     closeTools();
     setFormats(from, to);
@@ -358,6 +405,7 @@ function openTools() {
 function closeTools() {
   elements.toolsModal.hidden = true;
   elements.toolsBackdrop.hidden = true;
+  unlockSecondaryScreenScroll();
 }
 
 function bindPreviewTools() {
@@ -367,5 +415,6 @@ function bindPreviewTools() {
 }
 
 init();
+
 
 

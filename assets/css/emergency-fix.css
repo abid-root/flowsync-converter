@@ -1,0 +1,54 @@
+﻿/* Emergency repair: corrupted HTML symbol cleanup support */
+.icon-button {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.service-button span:last-child,
+.upload-menu-button {
+  font-size: 1rem;
+}
+
+.swap-button {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.upload-split {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.upload-menu {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  left: 0 !important;
+  right: auto !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 4px !important;
+  min-width: 250px !important;
+  z-index: 80 !important;
+}
+
+.upload-menu[hidden] {
+  display: none !important;
+}
+
+.upload-menu button {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+.support-pill {
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .upload-menu {
+    min-width: 220px !important;
+  }
+}

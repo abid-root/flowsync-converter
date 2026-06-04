@@ -1,0 +1,6 @@
+﻿/* Stop background scroll when secondary screens are open */
+body.secondary-screen-locked {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  touch-action: none;
+}
