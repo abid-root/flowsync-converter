@@ -1,0 +1,121 @@
+﻿#formatPicker {
+  width: min(860px, calc(100vw - 28px));
+  max-height: min(82vh, 720px);
+  border-radius: 26px;
+  overflow: hidden;
+}
+
+#formatPicker .modal-head {
+  padding: 20px 22px 14px;
+}
+
+#formatPicker .modal-head h2 {
+  font-size: 2rem;
+  line-height: 1.05;
+  margin: 0 0 6px;
+}
+
+#formatPicker .modal-head p {
+  margin: 0;
+  font-size: 1.02rem;
+  opacity: 0.82;
+}
+
+#formatPicker .picker-search {
+  padding: 0 22px 16px;
+}
+
+#formatPicker .picker-search input {
+  height: 58px;
+  border-radius: 18px;
+  font-size: 1rem;
+  padding-inline: 18px;
+}
+
+#formatPicker .picker-body {
+  display: block;
+  padding: 0 22px 22px;
+}
+
+#formatPicker .picker-categories {
+  display: none !important;
+}
+
+#formatPicker .picker-formats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  max-height: 430px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+#formatPicker .format-chip {
+  min-height: 88px;
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 2px;
+}
+
+#formatPicker .format-chip span {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  grid-row: 1 / span 2;
+}
+
+#formatPicker .format-chip strong {
+  font-size: 1.02rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+#formatPicker .format-chip small {
+  font-size: 0.82rem;
+  line-height: 1.15;
+  opacity: 0.72;
+}
+
+#formatPicker .format-chip.active {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(119, 83, 255, 0.18);
+}
+
+#formatPicker .empty-message {
+  margin: 12px 0 0;
+  opacity: 0.82;
+}
+
+@media (max-width: 760px) {
+  #formatPicker {
+    width: min(96vw, 560px);
+  }
+
+  #formatPicker .modal-head {
+    padding: 18px 18px 12px;
+  }
+
+  #formatPicker .picker-search {
+    padding: 0 18px 14px;
+  }
+
+  #formatPicker .picker-body {
+    padding: 0 18px 18px;
+  }
+
+  #formatPicker .picker-formats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-height: 58vh;
+  }
+
+  #formatPicker .format-chip {
+    min-height: 82px;
+    padding: 13px 14px;
+  }
+}

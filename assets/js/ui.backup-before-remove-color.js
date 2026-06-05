@@ -23,7 +23,7 @@ export function renderServiceMenu(state, elements, onCategory) {
   const active = categories[state.category] || categories.image;
   elements.serviceCurrent.textContent = active.label;
   elements.serviceMenu.innerHTML = Object.entries(categories)
-    .filter(([key]) => ['image', 'pdf', 'icon'].includes(key))
+    .filter(([key]) => ['image', 'pdf', 'icon', 'color'].includes(key))
     .map(([key, item]) => `
       <button class="service-menu-item ${key === state.category ? 'active' : ''}" data-category="${key}">
         <span>${escapeHtml(item.label)}</span>
@@ -78,7 +78,7 @@ export function renderFormatInfo(state, elements) {
 
 export function renderToolsPreview(elements) {
   elements.toolsPreview.innerHTML = Object.entries(categories)
-    .filter(([key]) => ['image', 'pdf', 'icon'].includes(key))
+    .filter(([key]) => ['image', 'pdf', 'icon', 'color'].includes(key))
     .map(([key, item]) => `
       <button class="mini-tool" data-category="${key}">
         <span class="mini-tool-icon">${formatIcon(item.formats[0])}</span>
@@ -479,8 +479,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
 
 
 

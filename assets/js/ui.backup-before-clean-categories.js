@@ -9,8 +9,7 @@ const iconMap = {
   document: 'M6 3h7l5 5v13H6V3Zm7 1.5V9h4.5L13 4.5ZM8 13h8v1.5H8V13Zm0 3h8v1.5H8V16Zm0-6h5v1.5H8V10Z',
   presentation: 'M4 5h16v10H4V5Zm2 2v6h12V7H6Zm5 8h2v3h4v2H7v-2h4v-3Z',
   archive: 'M7 3h10v18H7V3Zm2 2v2h2V5H9Zm2 2v2h2V7h-2Zm-2 2v2h2V9H9Zm2 2v2h2v-2h-2Zm-2 2v2h2v-2H9Z',
-  ebook: 'M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 1-2-2V4Zm3 3v9h8V7H8Z',
-  color: 'M12 3a9 9 0 0 0 0 18h1.1a1.8 1.8 0 0 0 1.3-3l-.7-.7a1 1 0 0 1 .7-1.7H16a5 5 0 0 0 0-10H12Zm-4 7a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 8 10Zm3-3a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 11 7Zm-4 7a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 7 14Zm5-1a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 12 13Z'
+  ebook: 'M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 1-2-2V4Zm3 3v9h8V7H8Z'
 };
 
 export function formatIcon(format) {
@@ -23,7 +22,7 @@ export function renderServiceMenu(state, elements, onCategory) {
   const active = categories[state.category] || categories.image;
   elements.serviceCurrent.textContent = active.label;
   elements.serviceMenu.innerHTML = Object.entries(categories)
-    .filter(([key]) => ['image', 'pdf', 'icon'].includes(key))
+    .filter(([key]) => ['image', 'video', 'audio', 'pdf', 'document', 'presentation'].includes(key))
     .map(([key, item]) => `
       <button class="service-menu-item ${key === state.category ? 'active' : ''}" data-category="${key}">
         <span>${escapeHtml(item.label)}</span>
@@ -78,7 +77,7 @@ export function renderFormatInfo(state, elements) {
 
 export function renderToolsPreview(elements) {
   elements.toolsPreview.innerHTML = Object.entries(categories)
-    .filter(([key]) => ['image', 'pdf', 'icon'].includes(key))
+    .filter(([key]) => ['image', 'video', 'audio', 'pdf', 'document', 'presentation'].includes(key))
     .map(([key, item]) => `
       <button class="mini-tool" data-category="${key}">
         <span class="mini-tool-icon">${formatIcon(item.formats[0])}</span>
@@ -479,9 +478,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
-
 
 
 
