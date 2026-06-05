@@ -1,0 +1,27 @@
+﻿/* Small nav top gap fix only */
+
+.site-header {
+  padding-top: 10px !important;
+}
+
+.topbar {
+  margin-top: 0 !important;
+}
+
+/* if nav is sticky/fixed */
+body .topbar,
+body .site-header .topbar {
+  transform: translateY(-4px) !important;
+}
+
+/* keep mobile safe */
+@media (max-width: 720px) {
+  .site-header {
+    padding-top: 8px !important;
+  }
+
+  body .topbar,
+  body .site-header .topbar {
+    transform: translateY(-3px) !important;
+  }
+}
