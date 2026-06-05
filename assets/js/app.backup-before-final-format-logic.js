@@ -235,37 +235,25 @@ function setCategory(category) {
   const pair = categoryDefaults[category] || categoryDefaults.image;
   state.category = category;
   state.from = pair[0];
-  state.to = conversions[state.from]?.includes(pair[1])
-    ? pair[1]
-    : (conversions[state.from]?.[0] || pair[1]);
-
+  state.to = pair[1];
   elements.serviceMenu.hidden = true;
-  syncQueueWithCurrentFormats();
   renderAll();
 }
 
 function setFormats(from, to) {
   state.from = from;
-  state.to = conversions[from]?.includes(to)
-    ? to
-    : (conversions[from]?.[0] || to || state.to);
-
-  syncQueueWithCurrentFormats();
+  state.to = to || conversions[from]?.[0] || state.to;
   renderAll();
 }
 
 function swapFormats() {
   if (conversions[state.to]?.includes(state.from)) {
     const nextFrom = state.to;
-    const nextTo = state.from;
-
+    state.to = state.from;
     state.from = nextFrom;
-    state.to = nextTo;
   } else {
     state.to = conversions[state.from]?.[0] || state.to;
   }
-
-  syncQueueWithCurrentFormats();
   renderAll();
 }
 
@@ -296,52 +284,13 @@ function renderPicker() {
     select: format => {
       if (state.picker.mode === 'from') {
         state.from = format;
-        state.to = conversions[format]?.includes(state.to)
-          ? state.to
-          : (conversions[format]?.[0] || state.to);
-
-        syncQueueWithCurrentFormats();
+        state.to = conversions[format]?.[0] || state.to;
       } else {
         state.to = format;
-        syncQueueOutputWithCurrentTo();
       }
-
       closePicker();
       renderAll();
     }
-  });
-}
-
-function syncQueueWithCurrentFormats() {
-  if (!state.queue.length) return;
-
-  state.queue.forEach(item => {
-    revokeItemDownload(item);
-
-    item.from = state.from;
-    item.to = conversions[state.from]?.includes(state.to)
-      ? state.to
-      : (conversions[state.from]?.[0] || state.to);
-
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
-  });
-}
-
-function syncQueueOutputWithCurrentTo() {
-  if (!state.queue.length) return;
-
-  state.queue.forEach(item => {
-    revokeItemDownload(item);
-
-    item.to = conversions[item.from]?.includes(state.to)
-      ? state.to
-      : (conversions[item.from]?.[0] || item.to);
-
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
   });
 }
 
@@ -654,96 +603,5 @@ if (document.readyState === 'loading') {
 }
 /* Safe upload dropdown direction end */
 
-/* Final format picker state sync start */
-(function setupFinalFormatPickerStateSync() {
-  if (window.__flowSyncFinalFormatPickerStateSync) return;
-  window.__flowSyncFinalFormatPickerStateSync = true;
-
-  const browserReadyImageOutputs = {
-    png: ['webp', 'jpg'],
-    jpg: ['webp', 'png'],
-    jpeg: ['webp', 'png'],
-    webp: ['png', 'jpg']
-  };
-
-  function categoryForFormat(format) {
-    const item = formats[format];
-    if (!item) return state.category;
-    if (item.category === 'pdf') return 'pdf';
-    return item.category;
-  }
-
-  function allowedOutputsFor(format) {
-    return browserReadyImageOutputs[format] || conversions[format] || [];
-  }
-
-  function resetQueueItem(item) {
-    revokeItemDownload(item);
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
-  }
-
-  function syncQueueFormatsToCurrent() {
-    if (!state.queue.length) return;
-
-    state.queue.forEach(item => {
-      item.from = state.from;
-      item.to = allowedOutputsFor(state.from).includes(state.to)
-        ? state.to
-        : (allowedOutputsFor(state.from)[0] || state.to);
-
-      resetQueueItem(item);
-    });
-  }
-
-  function syncQueueOutputToCurrent() {
-    if (!state.queue.length) return;
-
-    state.queue.forEach(item => {
-      item.to = allowedOutputsFor(item.from).includes(state.to)
-        ? state.to
-        : (allowedOutputsFor(item.from)[0] || item.to);
-
-      resetQueueItem(item);
-    });
-  }
-
-  function applyFormatSelection(format) {
-    if (!formats[format]) return;
-
-    if (state.picker.mode === 'from') {
-      state.from = format;
-      state.category = categoryForFormat(format);
-
-      const allowed = allowedOutputsFor(format);
-      state.to = allowed.includes(state.to)
-        ? state.to
-        : (allowed[0] || state.to);
-
-      syncQueueFormatsToCurrent();
-    } else {
-      const allowed = allowedOutputsFor(state.from);
-      if (!allowed.includes(format)) return;
-
-      state.to = format;
-      syncQueueOutputToCurrent();
-    }
-
-    closePicker();
-    renderAll(true);
-  }
-
-  elements.pickerFormats.addEventListener('click', event => {
-    const button = event.target.closest('[data-format]');
-    if (!button || !elements.pickerFormats.contains(button)) return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    applyFormatSelection(button.dataset.format);
-  }, true);
-})();
-/* Final format picker state sync end */
 
 

@@ -1,4 +1,4 @@
-﻿export const categories = {
+export const categories = {
   image: {
     label: 'Images',
     route: 'image-converter',
@@ -101,10 +101,10 @@ export const formats = {
 };
 
 export const conversions = {
-  png: ['webp', 'jpg'],
-  jpg: ['webp', 'png'],
-  jpeg: ['webp', 'png'],
-  webp: ['png', 'jpg'],
+  png: ['webp', 'jpg', 'avif', 'pdf', 'ico'],
+  jpg: ['webp', 'png', 'avif', 'pdf'],
+  jpeg: ['webp', 'png', 'avif', 'pdf'],
+  webp: ['png', 'jpg', 'avif', 'pdf'],
   avif: ['jpg', 'png', 'webp'],
   heic: ['jpg', 'png', 'webp', 'pdf'],
   svg: ['png', 'jpg', 'webp', 'pdf'],
@@ -178,5 +178,3 @@ export const formatNotes = {
   docx: 'A modern Word document format used for editable text documents with formatting.',
   pptx: 'A modern presentation format used for slides, pitch decks, and teaching materials.'
 };
-
-

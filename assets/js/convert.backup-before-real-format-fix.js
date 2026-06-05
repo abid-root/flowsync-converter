@@ -123,4 +123,3 @@ function canvasToBlob(canvas, mime, quality) {
   });
 }
 
-

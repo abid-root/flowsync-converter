@@ -235,37 +235,25 @@ function setCategory(category) {
   const pair = categoryDefaults[category] || categoryDefaults.image;
   state.category = category;
   state.from = pair[0];
-  state.to = conversions[state.from]?.includes(pair[1])
-    ? pair[1]
-    : (conversions[state.from]?.[0] || pair[1]);
-
+  state.to = pair[1];
   elements.serviceMenu.hidden = true;
-  syncQueueWithCurrentFormats();
   renderAll();
 }
 
 function setFormats(from, to) {
   state.from = from;
-  state.to = conversions[from]?.includes(to)
-    ? to
-    : (conversions[from]?.[0] || to || state.to);
-
-  syncQueueWithCurrentFormats();
+  state.to = to || conversions[from]?.[0] || state.to;
   renderAll();
 }
 
 function swapFormats() {
   if (conversions[state.to]?.includes(state.from)) {
     const nextFrom = state.to;
-    const nextTo = state.from;
-
+    state.to = state.from;
     state.from = nextFrom;
-    state.to = nextTo;
   } else {
     state.to = conversions[state.from]?.[0] || state.to;
   }
-
-  syncQueueWithCurrentFormats();
   renderAll();
 }
 
@@ -296,52 +284,13 @@ function renderPicker() {
     select: format => {
       if (state.picker.mode === 'from') {
         state.from = format;
-        state.to = conversions[format]?.includes(state.to)
-          ? state.to
-          : (conversions[format]?.[0] || state.to);
-
-        syncQueueWithCurrentFormats();
+        state.to = conversions[format]?.[0] || state.to;
       } else {
         state.to = format;
-        syncQueueOutputWithCurrentTo();
       }
-
       closePicker();
       renderAll();
     }
-  });
-}
-
-function syncQueueWithCurrentFormats() {
-  if (!state.queue.length) return;
-
-  state.queue.forEach(item => {
-    revokeItemDownload(item);
-
-    item.from = state.from;
-    item.to = conversions[state.from]?.includes(state.to)
-      ? state.to
-      : (conversions[state.from]?.[0] || state.to);
-
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
-  });
-}
-
-function syncQueueOutputWithCurrentTo() {
-  if (!state.queue.length) return;
-
-  state.queue.forEach(item => {
-    revokeItemDownload(item);
-
-    item.to = conversions[item.from]?.includes(state.to)
-      ? state.to
-      : (conversions[item.from]?.[0] || item.to);
-
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
   });
 }
 
@@ -745,5 +694,4 @@ if (document.readyState === 'loading') {
   }, true);
 })();
 /* Final format picker state sync end */
-
 

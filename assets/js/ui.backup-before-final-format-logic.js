@@ -94,15 +94,7 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
   const allFromFormats = categoryKey === 'all'
     ? Object.keys(formats)
     : (categories[categoryKey]?.formats || []);
-    const browserReadyImageInputs = new Set(['png', 'jpg', 'jpeg', 'webp']);
-  const source = mode === 'to'
-    ? validOutputs
-    : allFromFormats.filter(format => {
-        const item = formats[format];
-        if (!item) return false;
-        if (item.category === 'image') return browserReadyImageInputs.has(format);
-        return (conversions[format] || []).length > 0;
-      });
+  const source = mode === 'to' ? validOutputs : allFromFormats;
   const normalizedSearch = search.trim().toLowerCase();
   const visibleFormats = source.filter(format => {
     const item = formats[format];
@@ -193,18 +185,9 @@ export function renderQueue(queue, state, elements, handlers) {
     button.addEventListener('click', () => handlers.remove(button.dataset.remove));
   });
 
-  const converting = queue.some(item => item.status === 'converting');
   const converted = queue.some(item => item.status === 'converted' && item.downloadUrl);
   const pending = queue.some(item => !['converted', 'error'].includes(item.status));
-  const convertedCount = queue.filter(item => item.status === 'converted' && item.downloadUrl).length;
-
-  elements.convertButton.textContent = converting
-    ? 'Converting...'
-    : converted && !pending
-      ? (convertedCount > 1 ? 'Download all' : 'Download converted')
-      : 'Convert';
-
-  elements.convertButton.disabled = converting;
+  elements.convertButton.textContent = converted && !pending ? 'Download converted' : 'Convert';
   elements.convertButton.classList.toggle('converted', converted && !pending);
 }
 
@@ -325,6 +308,4 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
 

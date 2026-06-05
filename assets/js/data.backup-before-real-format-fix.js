@@ -179,4 +179,3 @@ export const formatNotes = {
   pptx: 'A modern presentation format used for slides, pitch decks, and teaching materials.'
 };
 
-

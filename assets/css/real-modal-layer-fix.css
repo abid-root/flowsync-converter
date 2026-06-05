@@ -1,0 +1,43 @@
+﻿/* Real modal layer fix: picker must be clickable */
+#pickerBackdrop,
+#optionsBackdrop,
+#toolsBackdrop,
+.backdrop {
+  z-index: 9000 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#pickerBackdrop {
+  background: rgba(5, 6, 12, 0.12) !important;
+}
+
+#optionsBackdrop,
+#toolsBackdrop {
+  background: rgba(5, 6, 12, 0.16) !important;
+}
+
+#formatPicker,
+#optionsModal,
+#toolsModal {
+  z-index: 9100 !important;
+  pointer-events: auto !important;
+}
+
+#formatPicker {
+  width: min(680px, calc(100vw - 44px)) !important;
+  max-width: 680px !important;
+  background: linear-gradient(180deg, #252635 0%, #191a25 100%) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.52) !important;
+}
+
+#formatPicker .format-chip {
+  background: rgba(255,255,255,0.075) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+}
+
+#formatPicker .format-chip.active {
+  background: rgba(139,92,246,0.24) !important;
+  border-color: rgba(139,92,246,0.70) !important;
+}

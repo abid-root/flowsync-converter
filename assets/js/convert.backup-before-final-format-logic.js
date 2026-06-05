@@ -1,4 +1,4 @@
-﻿import { formats } from './data.js';
+import { formats } from './data.js';
 
 const browserImageOutputs = {
   png: { mime: 'image/png', extension: 'png' },
@@ -71,11 +71,7 @@ function qualityFromSettings(settings = {}) {
 
 function outputName(item, extension) {
   const rawName = (item.settings?.rename || stripExtension(item.name) || 'converted').trim();
-  const safeName = stripExtension(rawName)
-    .replace(/[\\/:*?"<>|]+/g, '-')
-    .replace(/\s+/g, ' ')
-    .trim() || 'converted';
-
+  const safeName = rawName.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim() || 'converted';
   return `${safeName}.${extension}`;
 }
 
@@ -122,5 +118,3 @@ function canvasToBlob(canvas, mime, quality) {
     }, mime, quality);
   });
 }
-
-
