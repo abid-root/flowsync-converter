@@ -25,8 +25,8 @@ export function renderServiceMenu(state, elements, onCategory) {
     .filter(([key]) => ['image', 'video', 'audio', 'pdf', 'document', 'presentation'].includes(key))
     .map(([key, item]) => `
       <button class="service-menu-item ${key === state.category ? 'active' : ''}" data-category="${key}">
-        <span>${item.label}</span>
-        <small>${item.description}</small>
+        <span>${escapeHtml(item.label)}</span>
+        <small>${escapeHtml(item.description)}</small>
       </button>
     `).join('');
   elements.serviceMenu.querySelectorAll('[data-category]').forEach(button => {
@@ -48,11 +48,11 @@ export function renderHero(state, elements) {
 function formatCardMarkup(format, eyebrow) {
   const item = formats[format];
   return `
-    <span class="format-eyebrow">${eyebrow}</span>
+    <span class="format-eyebrow">${escapeHtml(eyebrow)}</span>
     <span class="format-icon">${formatIcon(format)}</span>
-    <strong>${item.label}</strong>
-    <small>${item.title}</small>
-    <span class="format-chevron">⌄</span>
+    <strong>${escapeHtml(item.label)}</strong>
+    <small>${escapeHtml(item.title)}</small>
+    <span class="format-chevron">&rsaquo;</span>
   `;
 }
 
@@ -61,13 +61,14 @@ export function renderFormatInfo(state, elements) {
   elements.formatInfo.innerHTML = items.map(format => {
     const data = formats[format];
     const note = formatNotes[format] || `${data.label} is a common file format used in ${categories[data.category]?.label?.toLowerCase() || 'file'} workflows.`;
+    const route = categories[data.category]?.route || 'tools';
     return `
       <article class="info-card">
         <div class="info-icon">${formatIcon(format)}</div>
         <div>
-          <h3>${data.label} <span>— ${data.title}</span></h3>
-          <p>${note}</p>
-          <a href="/${format}-converter/">${data.label} tools →</a>
+          <h3>${escapeHtml(data.label)} <span>- ${escapeHtml(data.title)}</span></h3>
+          <p>${escapeHtml(note)}</p>
+          <a href="/${route}/">${escapeHtml(data.label)} tools &rarr;</a>
         </div>
       </article>
     `;
@@ -80,7 +81,7 @@ export function renderToolsPreview(elements) {
     .map(([key, item]) => `
       <button class="mini-tool" data-category="${key}">
         <span class="mini-tool-icon">${formatIcon(item.formats[0])}</span>
-        <strong>${item.label}</strong>
+        <strong>${escapeHtml(item.label)}</strong>
         <small>${item.formats.slice(0, 6).map(f => formats[f]?.label || f.toUpperCase()).join(', ')}</small>
       </button>
     `).join('');
@@ -106,7 +107,7 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
 
   elements.pickerCategories.innerHTML = categoryList.map(([key, item]) => `
     <button class="picker-category ${key === categoryKey ? 'active' : ''}" data-picker-category="${key}">
-      <span>${item.label}</span><small>${item.formats.length}</small>
+      <span>${escapeHtml(item.label)}</span><small>${item.formats.length}</small>
     </button>
   `).join('');
 
@@ -116,8 +117,8 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
     return `
       <button class="format-chip ${selected ? 'active' : ''}" data-format="${format}">
         <span>${formatIcon(format)}</span>
-        <strong>${item.label}</strong>
-        <small>${item.title}</small>
+        <strong>${escapeHtml(item.label)}</strong>
+        <small>${escapeHtml(item.title)}</small>
       </button>
     `;
   }).join('') : '<p class="empty-message">No matching format found.</p>';
@@ -137,7 +138,7 @@ export function renderQueue(queue, state, elements, handlers) {
   if (!hasFiles) return;
 
   const total = queue.reduce((sum, item) => sum + item.size, 0);
-  elements.queueSummary.textContent = `${queue.length} file${queue.length > 1 ? 's' : ''} ready · ${bytesToSize(total)} total · Free limit: 10 files`;
+  elements.queueSummary.textContent = `${queue.length} file${queue.length > 1 ? 's' : ''} ready - ${bytesToSize(total)} total - Free limit: 10 files`;
 
   elements.queueList.innerHTML = queue.map(item => `
     <article class="queue-row" data-id="${item.id}">
@@ -145,29 +146,37 @@ export function renderQueue(queue, state, elements, handlers) {
         <span class="queue-icon">${formatIcon(item.from)}</span>
         <div>
           <strong title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</strong>
-          <small>${bytesToSize(item.size)} · ${formats[item.from]?.label || item.from.toUpperCase()} file</small>
+          <small>${bytesToSize(item.size)} - ${formats[item.from]?.label || item.from.toUpperCase()} file</small>
         </div>
       </div>
       <div class="queue-conversion">
         <span class="convert-word">Convert</span>
         <span class="tag">${formats[item.from]?.label || item.from.toUpperCase()}</span>
-        <span class="arrow">→</span>
-        <select data-output="${item.id}" aria-label="Output format">
-          ${(conversions[item.from] || conversions[state.from] || []).map(output => `
-            <option value="${output}" ${output === item.to ? 'selected' : ''}>${formats[output]?.label || output.toUpperCase()}</option>
-          `).join('')}
-        </select>
+        <span class="arrow">&rarr;</span>
+        <div class="queue-output-picker">
+          <button class="queue-output-button" type="button" aria-label="Output format">
+            <span>${formats[item.to]?.label || item.to.toUpperCase()}</span>
+            <span aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="queue-output-menu">
+            ${(conversions[item.from] || conversions[state.from] || []).map(output => `
+              <button type="button" class="${output === item.to ? 'active' : ''}" data-output="${item.id}" data-output-value="${output}">
+                ${formats[output]?.label || output.toUpperCase()}
+              </button>
+            `).join('')}
+          </div>
+        </div>
         <button class="line-button" data-options="${item.id}">Options</button>
-        <button class="icon-only" data-remove="${item.id}" aria-label="Remove ${escapeHtml(item.name)}">×</button>
+        <button class="icon-only" data-remove="${item.id}" aria-label="Remove ${escapeHtml(item.name)}">&times;</button>
       </div>
       <div class="queue-status ${item.status}">
-        ${item.status === 'converted' ? 'Ready to download' : item.status === 'converting' ? `Converting ${item.progress}%` : 'Ready'}
+        ${queueStatusText(item)}
       </div>
     </article>
   `).join('');
 
-  elements.queueList.querySelectorAll('[data-output]').forEach(select => {
-    select.addEventListener('change', () => handlers.output(select.dataset.output, select.value));
+  elements.queueList.querySelectorAll('[data-output][data-output-value]').forEach(button => {
+    button.addEventListener('click', () => handlers.output(button.dataset.output, button.dataset.outputValue));
   });
   elements.queueList.querySelectorAll('[data-options]').forEach(button => {
     button.addEventListener('click', () => handlers.options(button.dataset.options));
@@ -176,9 +185,10 @@ export function renderQueue(queue, state, elements, handlers) {
     button.addEventListener('click', () => handlers.remove(button.dataset.remove));
   });
 
-  const converted = queue.every(item => item.status === 'converted');
-  elements.convertButton.textContent = converted ? 'Download all' : 'Convert';
-  elements.convertButton.classList.toggle('converted', converted);
+  const converted = queue.some(item => item.status === 'converted' && item.downloadUrl);
+  const pending = queue.some(item => !['converted', 'error'].includes(item.status));
+  elements.convertButton.textContent = converted && !pending ? 'Download converted' : 'Convert';
+  elements.convertButton.classList.toggle('converted', converted && !pending);
 }
 
 export function renderOptionsModal(item, elements, onSave) {
@@ -194,8 +204,18 @@ export function renderOptionsModal(item, elements, onSave) {
   };
 }
 
+function queueStatusText(item) {
+  if (item.status === 'converted') return `Ready to download${item.downloadName ? ` - ${escapeHtml(item.downloadName)}` : ''}`;
+  if (item.status === 'converting') return `Converting ${item.progress}%`;
+  if (item.status === 'error') return escapeHtml(item.error || 'Conversion engine coming later for this format.');
+  return 'Ready';
+}
+
 function optionsForCategory(category, item) {
-  const rename = `<label class="field full"><span>Output name</span><input name="rename" placeholder="${stripExtension(item.name)}" value="${item.settings.rename || ''}"><small>Leave empty to keep the original name.</small></label>`;
+  const baseName = escapeHtml(stripExtension(item.name));
+  const renameValue = escapeHtml(item.settings.rename || '');
+  const rename = `<label class="field full"><span>Output name</span><input name="rename" placeholder="${baseName}" value="${renameValue}"><small>Leave empty to keep the original name.</small></label>`;
+
   if (category === 'video') {
     return `
       <label class="field"><span>Resolution</span><select name="resolution"><option>Original</option><option>1080p</option><option>720p</option><option>480p</option></select></label>
@@ -206,6 +226,7 @@ function optionsForCategory(category, item) {
       ${rename}
     `;
   }
+
   if (category === 'audio') {
     return `
       <label class="field"><span>Bitrate</span><select name="bitrate"><option>Auto</option><option>128 kbps</option><option>192 kbps</option><option>256 kbps</option><option>320 kbps</option></select></label>
@@ -215,6 +236,7 @@ function optionsForCategory(category, item) {
       ${rename}
     `;
   }
+
   if (category === 'pdf' || item.from === 'pdf' || item.to === 'pdf') {
     return `
       <label class="field"><span>Page range</span><input name="pages" placeholder="All or 1-5"></label>
@@ -224,6 +246,7 @@ function optionsForCategory(category, item) {
       ${rename}
     `;
   }
+
   if (category === 'document' || category === 'presentation') {
     return `
       <label class="field"><span>Page size</span><select name="pageSize"><option>Auto</option><option>A4</option><option>Letter</option></select></label>
@@ -232,11 +255,12 @@ function optionsForCategory(category, item) {
       ${rename}
     `;
   }
+
   return `
     <label class="field"><span>Width</span><input name="width" type="number" placeholder="Auto"><small>Output width in pixels.</small></label>
     <label class="field"><span>Height</span><input name="height" type="number" placeholder="Auto"><small>Output height in pixels.</small></label>
     <label class="field"><span>Fit</span><select name="fit"><option>Keep aspect ratio</option><option>Crop to size</option><option>Stretch</option></select></label>
-    <label class="field"><span>Quality</span><input name="quality" type="number" min="1" max="100" placeholder="85"><small>${formats[item.to]?.label || 'Output'} quality level.</small></label>
+    <label class="field"><span>Quality</span><input name="quality" type="number" min="1" max="100" placeholder="85"><small>${escapeHtml(formats[item.to]?.label || 'Output')} quality level.</small></label>
     <label class="switch-field"><span>Remove metadata</span><input name="strip" type="checkbox" checked></label>
     <label class="switch-field"><span>White background</span><input name="background" type="checkbox"></label>
     ${rename}
@@ -249,7 +273,7 @@ function stripExtension(name) {
 
 export function renderToolsModal(elements, onSelectPair, onSelectCategory) {
   const popular = popularRoutes.map(([from, to]) => `
-    <button class="tool-pill" data-from="${from}" data-to="${to}">${formats[from].label} → ${formats[to].label}</button>
+    <button class="tool-pill" data-from="${from}" data-to="${to}">${formats[from].label} to ${formats[to].label}</button>
   `).join('');
 
   const groups = Object.entries(categories).map(([key, item]) => `
@@ -258,8 +282,8 @@ export function renderToolsModal(elements, onSelectPair, onSelectCategory) {
         <span>${formatIcon(item.formats[0])}</span>
         <button data-category-jump="${key}">Open</button>
       </div>
-      <h3>${item.label}</h3>
-      <p>${item.description}</p>
+      <h3>${escapeHtml(item.label)}</h3>
+      <p>${escapeHtml(item.description)}</p>
       <div class="tool-tags">${item.formats.slice(0, 7).map(format => `<small>${formats[format]?.label || format.toUpperCase()}</small>`).join('')}</div>
     </article>
   `).join('');
@@ -285,8 +309,8 @@ export function renderToolsModal(elements, onSelectPair, onSelectCategory) {
   search.addEventListener('input', () => {
     const value = search.value.toLowerCase().replace(/\s+/g, ' ').trim();
     elements.toolsModalBody.querySelectorAll('.tool-pill').forEach(button => {
-      const text = button.textContent.toLowerCase().replace('→', ' to ');
-      button.hidden = value && !text.includes(value);
+      const text = button.textContent.toLowerCase().replace(/\s+/g, ' ').trim();
+      button.hidden = Boolean(value) && !text.includes(value);
     });
   });
 }

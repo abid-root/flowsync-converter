@@ -12,11 +12,13 @@ A fresh frontend prototype for a professional file conversion website.
 - Upload up to 10 files in the free version.
 - Queue view after files are selected.
 - Per-file options modal for image/video/audio/PDF/document/presentation settings.
-- Clean static folders for SEO-style URLs, for example `/png-to-webp/`.
+- Generated static folders for every supported SEO URL, for example `/png-to-jpg/`.
+- Browser-side PNG, JPG, and WEBP image conversion.
+- Sitemap and robots files for search indexing.
 
 ## Important note
 
-This is the frontend and interaction structure. The real conversion engine still needs to be connected.
+This is the frontend and interaction structure. The image conversion engine is connected for PNG, JPG, and WEBP in the browser. Other conversion engines still need to be connected.
 
 Recommended backend direction:
 
@@ -48,6 +50,16 @@ png-to-webp/index.html
 image-converter/index.html
 ...
 ```
+
+## Regenerate SEO pages
+
+All public pages are generated from `scripts/generate-pages.mjs`:
+
+```bash
+node scripts/generate-pages.mjs
+```
+
+The generator creates clean folder URLs, `sitemap.xml`, and `robots.txt`.
 
 ## How to preview locally
 

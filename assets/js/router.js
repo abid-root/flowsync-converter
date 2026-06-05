@@ -43,11 +43,39 @@ export function initialStateFromPath() {
 }
 
 export function updateBrowserUrl(from, to, replace = false) {
-  const slug = `/${slugFromPair(from, to)}/`;
+  const slug = `${basePath()}${slugFromPair(from, to)}/`;
   if (window.location.protocol === 'file:') return;
+  if (replace && isLandingPath(window.location.pathname)) return;
   if (window.location.pathname === slug) return;
   const method = replace ? 'replaceState' : 'pushState';
   window.history[method]({ from, to }, '', slug);
+}
+
+function basePath() {
+  const script = document.querySelector('script[src$="assets/js/app.js"]');
+  const source = script?.getAttribute('src') || '';
+
+  if (source.startsWith('/')) {
+    return source.replace(/assets\/js\/app\.js.*$/, '');
+  }
+
+  const clean = window.location.pathname.replace(/\/index\.html$/i, '/');
+  const parts = clean.split('/').filter(Boolean);
+  const route = parts.at(-1) || '';
+
+  if (!route || pairFromSlug(route) || categoryFromPath(route)) {
+    parts.pop();
+  }
+
+  return `/${parts.join('/')}${parts.length ? '/' : ''}`;
+}
+
+function isLandingPath(pathname) {
+  const clean = pathname.replace(/^\/+|\/+$/g, '');
+  const route = clean.split('/').pop() || '';
+  if (!clean || route.toLowerCase() === 'index.html') return true;
+  if (!pairFromSlug(route) && !categoryFromPath(pathname)) return true;
+  return Boolean(categoryFromPath(pathname));
 }
 
 export function updateMeta(from, to) {

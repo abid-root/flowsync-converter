@@ -1,7 +1,7 @@
 ﻿/* Better category picker layout: compact left categories + right formats */
 #pickerBackdrop {
-  background: rgba(6, 7, 14, 0.64) !important;
-  backdrop-filter: blur(8px) !important;
+  background: rgba(6, 7, 14, 0.34) !important;
+  backdrop-filter: none !important;
   display: grid !important;
   place-items: center !important;
   padding: 18px !important;

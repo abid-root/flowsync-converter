@@ -165,7 +165,7 @@ body:has(#queuePanel:not([hidden])) .workspace {
 }
 
 .tag,
-.queue-conversion select {
+.queue-output-button {
   min-height: 38px !important;
   border-radius: 11px !important;
   padding: 0 12px !important;

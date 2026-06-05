@@ -1,4 +1,5 @@
 ﻿import { categories, categoryDefaults, conversions, formats } from './data.js';
+import { canConvertInBrowser, conversionUnavailableMessage, convertImageItem } from './convert.js';
 import { initialStateFromPath, updateBrowserUrl, updateMeta } from './router.js';
 import { createQueueItems } from './upload.js';
 import {
@@ -320,12 +321,16 @@ function handleFiles(fileList) {
 function updateQueueOutput(id, output) {
   const item = state.queue.find(entry => entry.id === id);
   if (!item) return;
+  revokeItemDownload(item);
   item.to = output;
   item.status = 'ready';
+  item.progress = 0;
+  item.error = '';
   renderAll(true);
 }
 
 function removeQueueItem(id) {
+  state.queue.filter(item => item.id === id).forEach(revokeItemDownload);
   state.queue = state.queue.filter(item => item.id !== id);
   renderAll(true);
 }
@@ -349,46 +354,74 @@ function closeOptions() {
   unlockSecondaryScreenScroll();
 }
 
-function convertOrDownload() {
+async function convertOrDownload() {
   if (!state.queue.length) return;
-  const converted = state.queue.every(item => item.status === 'converted');
-  if (converted) {
-    downloadPlaceholder();
+
+  const hasDownload = state.queue.some(item => item.status === 'converted' && item.downloadUrl);
+  const hasPending = state.queue.some(item => !['converted', 'error'].includes(item.status));
+
+  if (hasDownload && !hasPending) {
+    downloadConvertedFiles();
     return;
   }
+
   state.queue.forEach(item => {
+    if (item.status === 'converted' && item.downloadUrl) return;
+    revokeItemDownload(item);
     item.status = 'converting';
     item.progress = 0;
+    item.error = '';
   });
   renderAll(true);
 
-  let tick = 0;
-  const timer = setInterval(() => {
-    tick += 20;
-    state.queue.forEach(item => {
-      item.progress = Math.min(100, tick);
-      if (item.progress >= 100) item.status = 'converted';
-    });
+  for (const item of state.queue) {
+    if (item.status === 'converted' && item.downloadUrl) continue;
+
+    if (!canConvertInBrowser(item)) {
+      item.status = 'error';
+      item.progress = 0;
+      item.error = conversionUnavailableMessage(item);
+      renderAll(true);
+      continue;
+    }
+
+    try {
+      item.progress = 35;
+      renderAll(true);
+      const result = await convertImageItem(item);
+      item.downloadUrl = URL.createObjectURL(result.blob);
+      item.downloadName = result.name;
+      item.status = 'converted';
+      item.progress = 100;
+      item.error = '';
+    } catch (error) {
+      item.status = 'error';
+      item.progress = 0;
+      item.error = error instanceof Error ? error.message : 'Conversion failed in this browser.';
+    }
     renderAll(true);
-    if (tick >= 100) clearInterval(timer);
-  }, 260);
+  }
 }
 
-function downloadPlaceholder() {
-  const lines = state.queue.map(item => `${item.name} -> ${formats[item.to]?.label || item.to.toUpperCase()}`);
-  const blob = new Blob([
-    'FlowSync conversion placeholder\n',
-    'Connect the real conversion engine before production use.\n\n',
-    lines.join('\n')
-  ], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
+function downloadConvertedFiles() {
+  state.queue
+    .filter(item => item.status === 'converted' && item.downloadUrl)
+    .forEach(item => downloadUrl(item.downloadUrl, item.downloadName || item.name));
+}
+
+function downloadUrl(url, filename) {
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'flowsync-conversion-summary.txt';
+  link.download = filename;
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+}
+
+function revokeItemDownload(item) {
+  if (item.downloadUrl) URL.revokeObjectURL(item.downloadUrl);
+  item.downloadUrl = '';
+  item.downloadName = '';
 }
 
 function openTools() {
@@ -620,7 +653,7 @@ function setupFinalOptionsCleaner() {
       bgCard.className = 'field remove-bg-later-card option-full-row';
       bgCard.innerHTML = `
         <span>Remove background</span>
-        <small>Coming later — useful for product images, profile photos, and clean cutouts.</small>
+        <small>Coming later - useful for product images, profile photos, and clean cutouts.</small>
         <em>Later</em>
       `;
 
