@@ -216,8 +216,6 @@ function renderAll(replaceUrl = false) {
     remove: removeQueueItem
   });
   bindPreviewTools();
-  ensureZipButton();
-  updateZipButton();
   updateMeta(state.from, state.to);
   updateBrowserUrl(state.from, state.to, replaceUrl);
 }
@@ -349,34 +347,23 @@ function syncQueueOutputWithCurrentTo() {
 
 function handleFiles(fileList) {
   if (!fileList || !fileList.length) return;
-
   const remaining = Math.max(0, 10 - state.queue.length);
-
   if (!remaining) {
-    showBottomToast('Free limit reached — 10 files per batch. Upgrade option coming later.');
-    elements.fileInput.value = '';
+    alert('Free version supports up to 10 files per batch. Remove files or upgrade later.');
     return;
   }
-
   const incoming = Array.from(fileList).slice(0, remaining);
-
   if (fileList.length > remaining) {
-    showBottomToast(`Free limit: added ${remaining} file${remaining === 1 ? '' : 's'}. Maximum 10 files per batch.`);
+    alert(`Free version supports up to 10 files per batch. Added ${remaining} file${remaining === 1 ? '' : 's'}.`);
   }
-
   const items = createQueueItems(incoming, state);
-
   if (items.length) {
     const first = items[0];
-
     if (formats[first.from]) {
       state.from = first.from;
-      state.to = conversions[first.from]?.includes(state.to)
-        ? state.to
-        : (conversions[first.from]?.[0] || state.to);
+      state.to = conversions[first.from]?.includes(state.to) ? state.to : (conversions[first.from]?.[0] || state.to);
     }
   }
-
   state.queue = [...state.queue, ...items].slice(0, 10);
   elements.fileInput.value = '';
   renderAll();
@@ -759,224 +746,4 @@ if (document.readyState === 'loading') {
 })();
 /* Final format picker state sync end */
 
-/* ZIP download and toast final start */
-function ensureZipButton() {
-  const actions = document.querySelector('#queuePanel .queue-actions');
-  const convertButton = document.getElementById('convertButton');
-
-  if (!actions || !convertButton) return;
-
-  let zipButton = document.getElementById('zipButton');
-
-  if (!zipButton) {
-    zipButton = document.createElement('button');
-    zipButton.id = 'zipButton';
-    zipButton.type = 'button';
-    zipButton.className = 'secondary-button zip-button';
-    zipButton.textContent = 'Download ZIP';
-    zipButton.hidden = true;
-
-    convertButton.insertAdjacentElement('afterend', zipButton);
-    zipButton.addEventListener('click', downloadConvertedZip);
-  }
-}
-
-function convertedQueueItems() {
-  return state.queue.filter(item => item.status === 'converted' && item.downloadUrl);
-}
-
-function updateZipButton() {
-  const zipButton = document.getElementById('zipButton');
-
-  if (!zipButton) return;
-
-  const converted = convertedQueueItems();
-  const pending = state.queue.some(item => !['converted', 'error'].includes(item.status));
-
-  zipButton.hidden = !(converted.length > 1 && !pending);
-}
-
-async function downloadConvertedZip() {
-  const converted = convertedQueueItems();
-
-  if (converted.length < 2) {
-    showBottomToast('Convert at least 2 files before downloading ZIP.');
-    return;
-  }
-
-  try {
-    const files = [];
-
-    for (const item of converted) {
-      const response = await fetch(item.downloadUrl);
-      const blob = await response.blob();
-      const bytes = new Uint8Array(await blob.arrayBuffer());
-
-      files.push({
-        name: safeZipFileName(item.downloadName || item.name || 'converted-file'),
-        bytes
-      });
-    }
-
-    const zipBlob = buildZip(files);
-    const zipUrl = URL.createObjectURL(zipBlob);
-
-    downloadUrl(zipUrl, `${state.from}-to-${state.to}-converted.zip`);
-
-    setTimeout(() => URL.revokeObjectURL(zipUrl), 1200);
-  } catch (error) {
-    showBottomToast('ZIP download failed. Try converting again.');
-  }
-}
-
-function safeZipFileName(name) {
-  return String(name || 'converted-file')
-    .replace(/[\\/:*?"<>|]+/g, '-')
-    .replace(/\s+/g, ' ')
-    .trim() || 'converted-file';
-}
-
-function buildZip(files) {
-  const chunks = [];
-  const central = [];
-  let offset = 0;
-
-  for (const file of files) {
-    const nameBytes = new TextEncoder().encode(file.name);
-    const crc = crc32(file.bytes);
-
-    const localHeader = new Uint8Array(30 + nameBytes.length);
-    const view = new DataView(localHeader.buffer);
-
-    view.setUint32(0, 0x04034b50, true);
-    view.setUint16(4, 20, true);
-    view.setUint16(6, 0, true);
-    view.setUint16(8, 0, true);
-    view.setUint16(10, 0, true);
-    view.setUint16(12, 0, true);
-    view.setUint32(14, crc, true);
-    view.setUint32(18, file.bytes.length, true);
-    view.setUint32(22, file.bytes.length, true);
-    view.setUint16(26, nameBytes.length, true);
-    view.setUint16(28, 0, true);
-
-    localHeader.set(nameBytes, 30);
-    chunks.push(localHeader, file.bytes);
-
-    const centralHeader = new Uint8Array(46 + nameBytes.length);
-    const centralView = new DataView(centralHeader.buffer);
-
-    centralView.setUint32(0, 0x02014b50, true);
-    centralView.setUint16(4, 20, true);
-    centralView.setUint16(6, 20, true);
-    centralView.setUint16(8, 0, true);
-    centralView.setUint16(10, 0, true);
-    centralView.setUint16(12, 0, true);
-    centralView.setUint16(14, 0, true);
-    centralView.setUint32(16, crc, true);
-    centralView.setUint32(20, file.bytes.length, true);
-    centralView.setUint32(24, file.bytes.length, true);
-    centralView.setUint16(28, nameBytes.length, true);
-    centralView.setUint16(30, 0, true);
-    centralView.setUint16(32, 0, true);
-    centralView.setUint16(34, 0, true);
-    centralView.setUint16(36, 0, true);
-    centralView.setUint32(38, 0, true);
-    centralView.setUint32(42, offset, true);
-
-    centralHeader.set(nameBytes, 46);
-    central.push(centralHeader);
-
-    offset += localHeader.length + file.bytes.length;
-  }
-
-  const centralStart = offset;
-
-  for (const part of central) {
-    chunks.push(part);
-    offset += part.length;
-  }
-
-  const end = new Uint8Array(22);
-  const endView = new DataView(end.buffer);
-
-  endView.setUint32(0, 0x06054b50, true);
-  endView.setUint16(4, 0, true);
-  endView.setUint16(6, 0, true);
-  endView.setUint16(8, files.length, true);
-  endView.setUint16(10, files.length, true);
-  endView.setUint32(12, offset - centralStart, true);
-  endView.setUint32(16, centralStart, true);
-  endView.setUint16(20, 0, true);
-
-  chunks.push(end);
-
-  return new Blob(chunks, { type: 'application/zip' });
-}
-
-const crcTable = (() => {
-  const table = new Uint32Array(256);
-
-  for (let i = 0; i < 256; i++) {
-    let c = i;
-
-    for (let j = 0; j < 8; j++) {
-      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    }
-
-    table[i] = c >>> 0;
-  }
-
-  return table;
-})();
-
-function crc32(bytes) {
-  let crc = 0xffffffff;
-
-  for (const byte of bytes) {
-    crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
-  }
-
-  return (crc ^ 0xffffffff) >>> 0;
-}
-
-function setupAddMoreLimitToast() {
-  const addButton = document.getElementById('addFileButton');
-
-  if (!addButton || addButton.dataset.limitToastReady === 'true') return;
-
-  addButton.dataset.limitToastReady = 'true';
-
-  addButton.addEventListener('click', event => {
-    if (state.queue.length < 10) return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    showBottomToast('Free limit reached — 10 files per batch. Upgrade option coming later.');
-  }, true);
-}
-
-function showBottomToast(message) {
-  let toast = document.getElementById('appToast');
-
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'appToast';
-    toast.className = 'app-toast';
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.classList.add('show');
-
-  window.clearTimeout(showBottomToast.timer);
-  showBottomToast.timer = window.setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2800);
-}
-
-ensureZipButton();
-setupAddMoreLimitToast();
-/* ZIP download and toast final end */
 

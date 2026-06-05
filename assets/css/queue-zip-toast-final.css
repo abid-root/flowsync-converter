@@ -1,0 +1,81 @@
+﻿/* Queue ZIP button and bottom toast */
+
+#queuePanel .queue-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+#addFileButton {
+  margin-right: auto !important;
+}
+
+#convertButton {
+  margin-left: 0 !important;
+}
+
+#zipButton {
+  min-height: 48px !important;
+  padding: 0 22px !important;
+  border-radius: 14px !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+
+  color: rgba(255,255,255,0.94) !important;
+  background: rgba(255,255,255,0.075) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+}
+
+#zipButton:hover {
+  transform: translateY(-1px) !important;
+  background: rgba(139,92,246,0.18) !important;
+  border-color: rgba(139,92,246,0.45) !important;
+}
+
+#zipButton[hidden] {
+  display: none !important;
+}
+
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 25000;
+
+  transform: translate(-50%, 130%);
+  opacity: 0;
+  pointer-events: none;
+
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 14px 18px;
+  border-radius: 16px;
+
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-align: center;
+
+  background: linear-gradient(135deg, rgba(255,122,61,0.97), rgba(139,92,246,0.97));
+  border: 1px solid rgba(255,255,255,0.20);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.48);
+
+  transition: transform 260ms ease, opacity 260ms ease;
+}
+
+.app-toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  #queuePanel .queue-actions {
+    flex-wrap: wrap !important;
+  }
+
+  #addFileButton,
+  #convertButton,
+  #zipButton {
+    width: 100% !important;
+  }
+}

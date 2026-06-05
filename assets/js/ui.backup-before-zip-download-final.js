@@ -231,7 +231,7 @@ export function renderQueue(queue, state, elements, handlers) {
   elements.convertButton.textContent = converting
     ? 'Converting...'
     : converted && !pending
-      ? (convertedCount > 1 ? 'Download converted' : 'Download converted')
+      ? (convertedCount > 1 ? 'Download all' : 'Download converted')
       : 'Convert';
 
   elements.convertButton.disabled = converting;
@@ -355,7 +355,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
 
 
 
