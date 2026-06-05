@@ -89,12 +89,35 @@ export function renderToolsPreview(elements) {
 }
 
 export function renderFormatPicker({ mode, state, search = '', activeCategory = null }, elements, handlers) {
-  const inputFormats = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif', 'svg', 'bmp', 'ico'];
+  const validOutputs = conversions[state.from] || [];
 
-  const source = mode === 'to'
-    ? (conversions[state.from] || []).filter(format => formats[format])
-    : inputFormats.filter(format => formats[format] && conversions[format]);
+  function categoryOf(format) {
+    return formats[format]?.category || 'document';
+  }
 
+  function formatsForCategory(categoryKey) {
+    if (mode === 'to') {
+      return validOutputs.filter(format => categoryOf(format) === categoryKey);
+    }
+
+    return categories[categoryKey]?.formats || [];
+  }
+
+  const availableCategories = mode === 'to'
+    ? Object.entries(categories).filter(([key]) => formatsForCategory(key).length > 0)
+    : Object.entries(categories);
+
+  let categoryKey = activeCategory || state.category;
+
+  if (mode === 'to') {
+    const stillValid = availableCategories.some(([key]) => key === categoryKey);
+
+    if (!stillValid) {
+      categoryKey = availableCategories[0]?.[0] || categoryOf(state.to);
+    }
+  }
+
+  const source = formatsForCategory(categoryKey);
   const normalizedSearch = search.trim().toLowerCase();
 
   const visibleFormats = source.filter(format => {
@@ -109,14 +132,21 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
 
   elements.pickerTitle.textContent = mode === 'to'
     ? `Choose output for ${formats[state.from]?.label || state.from.toUpperCase()}`
-    : 'Choose image format';
+    : 'Choose input format';
 
   elements.pickerSubtitle.textContent = mode === 'to'
-    ? 'Only supported outputs are shown.'
-    : 'Select the image or icon file type.';
+    ? 'Only possible outputs are shown.'
+    : 'Pick a category, then choose a source format.';
 
-  elements.pickerCategories.innerHTML = '';
-  elements.pickerCategories.hidden = true;
+  elements.pickerCategories.innerHTML = availableCategories.map(([key, item]) => {
+    const count = formatsForCategory(key).length;
+
+    return `
+      <button class="picker-category ${key === categoryKey ? 'active' : ''}" data-picker-category="${key}">
+        <span>${escapeHtml(item.label)}</span><small>${count}</small>
+      </button>
+    `;
+  }).join('');
 
   elements.pickerFormats.innerHTML = visibleFormats.length ? visibleFormats.map(format => {
     const item = formats[format];
@@ -130,6 +160,10 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
       </button>
     `;
   }).join('') : '<p class="empty-message">No matching format found.</p>';
+
+  elements.pickerCategories.querySelectorAll('[data-picker-category]').forEach(button => {
+    button.addEventListener('click', () => handlers.category(button.dataset.pickerCategory));
+  });
 
   elements.pickerFormats.querySelectorAll('[data-format]').forEach(button => {
     button.addEventListener('click', () => handlers.select(button.dataset.format));
@@ -445,7 +479,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
 
 
 
