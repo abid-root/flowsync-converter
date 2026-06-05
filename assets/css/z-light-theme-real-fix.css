@@ -1,0 +1,122 @@
+﻿/* Real light theme override - loaded last */
+
+/* NAV / TOPBAR: fix dark forced color from nav-fixed-clean.css */
+html[data-theme="light"] body .topbar,
+html[data-theme="light"] body .site-header .topbar,
+html[data-theme="light"] body header .topbar {
+  background: rgba(255, 250, 240, 0.88) !important;
+  border-color: rgba(25, 22, 18, 0.12) !important;
+  color: #171923 !important;
+  box-shadow: 0 18px 55px rgba(65, 49, 24, 0.13) !important;
+  backdrop-filter: blur(22px) !important;
+  -webkit-backdrop-filter: blur(22px) !important;
+}
+
+/* nav text */
+html[data-theme="light"] body .topbar a,
+html[data-theme="light"] body .topbar button,
+html[data-theme="light"] body .nav-links a,
+html[data-theme="light"] body .nav-links button {
+  color: rgba(23, 25, 35, 0.68) !important;
+}
+
+html[data-theme="light"] body .topbar a:hover,
+html[data-theme="light"] body .topbar button:hover,
+html[data-theme="light"] body .nav-links a:hover,
+html[data-theme="light"] body .nav-links button:hover {
+  color: #171923 !important;
+  background: rgba(23, 25, 35, 0.055) !important;
+}
+
+/* brand text */
+html[data-theme="light"] body .brand-text strong {
+  color: #171923 !important;
+}
+
+html[data-theme="light"] body .brand-text span {
+  color: rgba(23, 25, 35, 0.58) !important;
+}
+
+/* theme button in nav */
+html[data-theme="light"] body #themeToggle,
+html[data-theme="light"] body .theme-toggle,
+html[data-theme="light"] body .icon-button {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(23, 25, 35, 0.14) !important;
+  color: #171923 !important;
+}
+
+/* QUEUE ACTION BAR: fix dark forced color from queue-spaced-final.css */
+html[data-theme="light"] body #queuePanel .queue-actions,
+html[data-theme="light"] body:has(#queuePanel:not([hidden])) #queuePanel .queue-actions,
+html[data-theme="light"] body:has(#queuePanel:not([hidden])) .queue-actions {
+  background: rgba(255, 250, 240, 0.88) !important;
+  border-color: rgba(25, 22, 18, 0.12) !important;
+  color: #171923 !important;
+  box-shadow: 0 22px 70px rgba(65, 49, 24, 0.13) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+/* queue secondary buttons: see more, add more, zip */
+html[data-theme="light"] body #queuePanel .queue-actions button:not(#convertButton),
+html[data-theme="light"] body #seeMoreQueueButton,
+html[data-theme="light"] body #addFileButton,
+html[data-theme="light"] body #zipButton {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(23, 25, 35, 0.14) !important;
+  color: #171923 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] body #queuePanel .queue-actions button:not(#convertButton):hover,
+html[data-theme="light"] body #seeMoreQueueButton:hover,
+html[data-theme="light"] body #addFileButton:hover,
+html[data-theme="light"] body #zipButton:hover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(195, 106, 10, 0.32) !important;
+  color: #11131a !important;
+}
+
+/* keep main download button green */
+html[data-theme="light"] body #convertButton,
+html[data-theme="light"] body #convertButton.converted,
+html[data-theme="light"] body #convertButton.download-ready {
+  color: #ffffff !important;
+  border: 0 !important;
+  background: linear-gradient(135deg, #12c99b, #2dd4bf) !important;
+  box-shadow: 0 20px 52px rgba(45, 212, 191, 0.30) !important;
+}
+
+/* queue rows also should stay light */
+html[data-theme="light"] body #queuePanel,
+html[data-theme="light"] body .queue-panel {
+  background: rgba(255, 255, 255, 0.62) !important;
+  border-color: rgba(23, 25, 35, 0.12) !important;
+}
+
+html[data-theme="light"] body .queue-row {
+  background: rgba(255, 255, 255, 0.58) !important;
+  border-color: rgba(23, 25, 35, 0.10) !important;
+  color: #171923 !important;
+}
+
+html[data-theme="light"] body .queue-row strong,
+html[data-theme="light"] body .queue-head h2 {
+  color: #171923 !important;
+}
+
+html[data-theme="light"] body .queue-row small,
+html[data-theme="light"] body .queue-head p,
+html[data-theme="light"] body .convert-word {
+  color: rgba(23, 25, 35, 0.62) !important;
+}
+
+/* row buttons */
+html[data-theme="light"] body .tag,
+html[data-theme="light"] body .queue-output-button,
+html[data-theme="light"] body .queue-row .line-button {
+  background: rgba(255, 255, 255, 0.76) !important;
+  border-color: rgba(23, 25, 35, 0.14) !important;
+  color: #171923 !important;
+}
