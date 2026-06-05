@@ -1,0 +1,187 @@
+﻿/* Real options modal fit + themed quality dropdown */
+
+#optionsBackdrop {
+  background: rgba(4, 5, 12, 0.18) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#optionsBackdrop[hidden] {
+  display: none !important;
+}
+
+#optionsBackdrop:not([hidden]) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  overflow: auto !important;
+}
+
+#optionsModal,
+.options-modal {
+  width: min(560px, calc(100vw - 36px)) !important;
+  max-width: 560px !important;
+  max-height: calc(100vh - 36px) !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, #1c1d2a 0%, #131520 100%) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.52) !important;
+}
+
+#optionsModal .modal-head,
+.options-modal .modal-head {
+  padding: 13px 16px 10px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.09) !important;
+}
+
+#optionsModal .modal-head h2,
+.options-modal .modal-head h2 {
+  font-size: 1rem !important;
+  margin: 0 0 3px !important;
+}
+
+#optionsModal .modal-head p,
+.options-modal .modal-head p {
+  font-size: 0.76rem !important;
+  margin: 0 !important;
+  color: rgba(235,235,245,0.62) !important;
+}
+
+#optionsModal .close-button,
+.options-modal .close-button {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 12px !important;
+}
+
+#optionsModal .options-body,
+.options-modal .options-body {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px 12px !important;
+  padding: 12px 16px !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#optionsModal .field,
+.options-modal .field {
+  margin: 0 !important;
+  min-width: 0 !important;
+  gap: 5px !important;
+}
+
+#optionsModal .field.full,
+.options-modal .field.full {
+  grid-column: 1 / -1 !important;
+}
+
+#optionsModal .field span,
+.options-modal .field span {
+  display: block !important;
+  font-size: 0.82rem !important;
+  font-weight: 850 !important;
+  margin-bottom: 5px !important;
+  color: rgba(245,245,252,0.90) !important;
+}
+
+#optionsModal .field small,
+.options-modal .field small {
+  display: block !important;
+  margin-top: 5px !important;
+  font-size: 0.68rem !important;
+  line-height: 1.25 !important;
+  color: rgba(235,235,245,0.58) !important;
+}
+
+#optionsModal input,
+#optionsModal select,
+.options-modal input,
+.options-modal select {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  padding: 0 12px !important;
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  color: rgba(255,255,255,0.92) !important;
+  font-size: 0.86rem !important;
+}
+
+#optionsModal input::placeholder,
+.options-modal input::placeholder {
+  color: rgba(255,255,255,0.40) !important;
+}
+
+/* Theme-matching quality dropdown */
+#optionsModal .quality-select,
+.options-modal .quality-select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  color-scheme: dark !important;
+  cursor: pointer !important;
+  padding-right: 38px !important;
+  font-weight: 850 !important;
+  background:
+    linear-gradient(45deg, transparent 50%, rgba(245,245,252,0.82) 50%),
+    linear-gradient(135deg, rgba(245,245,252,0.82) 50%, transparent 50%),
+    rgba(255,255,255,0.075) !important;
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px),
+    0 0 !important;
+  background-size: 6px 6px, 6px 6px, 100% 100% !important;
+  background-repeat: no-repeat !important;
+  border-color: rgba(139,92,246,0.42) !important;
+}
+
+#optionsModal .quality-select:focus,
+.options-modal .quality-select:focus {
+  outline: none !important;
+  border-color: rgba(139,92,246,0.78) !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important;
+}
+
+#optionsModal .quality-select option,
+.options-modal .quality-select option {
+  background: #1c1d2a !important;
+  color: #f5f5fc !important;
+}
+
+.future-pill {
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  font-size: 0.84rem !important;
+  font-weight: 850 !important;
+  color: rgba(245,245,252,0.42) !important;
+  background: rgba(255,255,255,0.045) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+
+#optionsModal .options-actions,
+.options-modal .options-actions {
+  padding: 10px 16px 13px !important;
+  gap: 9px !important;
+  border-top: 1px solid rgba(255,255,255,0.09) !important;
+}
+
+#optionsModal .options-actions button,
+.options-modal .options-actions button {
+  min-height: 40px !important;
+  border-radius: 13px !important;
+  padding: 0 18px !important;
+  font-size: 0.9rem !important;
+}
+
+@media (max-width: 640px) {
+  #optionsModal .options-body,
+  .options-modal .options-body {
+    grid-template-columns: 1fr !important;
+  }
+}

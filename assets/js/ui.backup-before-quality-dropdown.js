@@ -263,47 +263,38 @@ function optionsForCategory(category, item) {
   const renameValue = escapeHtml(item.settings.rename || '');
   const widthValue = escapeHtml(item.settings.width || '');
   const heightValue = escapeHtml(item.settings.height || '');
-  const qualityValue = String(item.settings.quality || '85');
+  const qualityValue = escapeHtml(item.settings.quality || '');
   const outputLabel = escapeHtml(formats[item.to]?.label || 'Output');
-
-  function selected(value) {
-    return qualityValue === value ? 'selected' : '';
-  }
 
   return `
     <label class="field">
       <span>Width</span>
       <input name="width" type="number" min="1" placeholder="Auto" value="${widthValue}">
-      <small>Resize width in pixels.</small>
+      <small>Output width in pixels.</small>
     </label>
 
     <label class="field">
       <span>Height</span>
       <input name="height" type="number" min="1" placeholder="Auto" value="${heightValue}">
-      <small>Resize height in pixels.</small>
+      <small>Output height in pixels.</small>
     </label>
 
     <label class="field">
       <span>Quality</span>
-      <select name="quality" class="quality-select">
-        <option value="100" ${selected('100')}>100% — Best</option>
-        <option value="85" ${selected('85')}>85% — Recommended</option>
-        <option value="60" ${selected('60')}>60% — Smaller</option>
-        <option value="30" ${selected('30')}>30% — Max compression</option>
-      </select>
-      <small>${outputLabel} quality for JPG and WEBP.</small>
+      <input name="quality" type="number" min="1" max="100" placeholder="85" value="${qualityValue}">
+      <small>${outputLabel} quality level.</small>
     </label>
-
-    <div class="field future-field">
-      <span>Remove background</span>
-      <div class="future-pill">Coming later</div>
-      <small>For clean cutouts later.</small>
-    </div>
 
     <label class="field full">
       <span>Rename file</span>
       <input name="rename" placeholder="${baseName}" value="${renameValue}">
-      <small>Leave empty to keep original name.</small>
+      <small>Leave empty to keep the original name.</small>
+    </label>
+
+    <label class="field full">
+      <span>Remove background</span>
+      <input type="text" placeholder="Coming later" disabled>
+      <small>Coming later — useful for product images, profile photos, and clean cutouts.</small>
     </label>
   `;
 }
@@ -364,10 +355,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
-
-
 
 
 

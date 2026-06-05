@@ -266,8 +266,8 @@ function optionsForCategory(category, item) {
   const qualityValue = String(item.settings.quality || '85');
   const outputLabel = escapeHtml(formats[item.to]?.label || 'Output');
 
-  function selected(value) {
-    return qualityValue === value ? 'selected' : '';
+  function qualityChecked(value) {
+    return qualityValue === value ? 'checked' : '';
   }
 
   return `
@@ -283,16 +283,28 @@ function optionsForCategory(category, item) {
       <small>Resize height in pixels.</small>
     </label>
 
-    <label class="field">
+    <div class="field quality-field">
       <span>Quality</span>
-      <select name="quality" class="quality-select">
-        <option value="100" ${selected('100')}>100% — Best</option>
-        <option value="85" ${selected('85')}>85% — Recommended</option>
-        <option value="60" ${selected('60')}>60% — Smaller</option>
-        <option value="30" ${selected('30')}>30% — Max compression</option>
-      </select>
+      <div class="quality-presets" role="radiogroup" aria-label="${outputLabel} quality">
+        <label class="quality-pill">
+          <input type="radio" name="quality" value="100" ${qualityChecked('100')}>
+          <span>100%</span>
+        </label>
+        <label class="quality-pill">
+          <input type="radio" name="quality" value="85" ${qualityChecked('85')}>
+          <span>85%</span>
+        </label>
+        <label class="quality-pill">
+          <input type="radio" name="quality" value="60" ${qualityChecked('60')}>
+          <span>60%</span>
+        </label>
+        <label class="quality-pill">
+          <input type="radio" name="quality" value="30" ${qualityChecked('30')}>
+          <span>30%</span>
+        </label>
+      </div>
       <small>${outputLabel} quality for JPG and WEBP.</small>
-    </label>
+    </div>
 
     <div class="field future-field">
       <span>Remove background</span>
@@ -364,7 +376,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
 
 
 

@@ -402,21 +402,10 @@ function removeQueueItem(id) {
 function openOptions(id) {
   const item = state.queue.find(entry => entry.id === id);
   if (!item) return;
-
   state.activeOptionsId = id;
   lockSecondaryScreenScroll();
-
   renderOptionsModal(item, elements, data => {
     item.settings = data;
-
-    // Important:
-    // If user already converted this file, old download is no longer valid
-    // after changing quality / rename / width / height.
-    revokeItemDownload(item);
-    item.status = 'ready';
-    item.progress = 0;
-    item.error = '';
-
     closeOptions();
     renderAll(true);
   });
@@ -990,5 +979,4 @@ function showBottomToast(message) {
 ensureZipButton();
 setupAddMoreLimitToast();
 /* ZIP download and toast final end */
-
 
