@@ -1,0 +1,45 @@
+﻿/* Correct navbar top gap fix.
+   Real header class is .topbar-wrap */
+
+.topbar-wrap,
+header.topbar-wrap {
+  padding-top: 4px !important;
+  margin-top: 0 !important;
+  top: 0 !important;
+}
+
+/* actual navbar box */
+.topbar-wrap .topbar,
+header.topbar-wrap .topbar,
+.topbar {
+  margin-top: 0 !important;
+}
+
+/* remove extra hero spacing added by nav-fixed-clean.css */
+.hero {
+  padding-top: 28px !important;
+}
+
+/* desktop: keep nav very close to top */
+@media (min-width: 900px) {
+  .topbar-wrap,
+  header.topbar-wrap {
+    padding-top: 4px !important;
+  }
+
+  .hero {
+    padding-top: 26px !important;
+  }
+}
+
+/* mobile */
+@media (max-width: 720px) {
+  .topbar-wrap,
+  header.topbar-wrap {
+    padding-top: 3px !important;
+  }
+
+  .hero {
+    padding-top: 22px !important;
+  }
+}
