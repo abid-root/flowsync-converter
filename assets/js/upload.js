@@ -26,32 +26,48 @@ export function fileCategory(format) {
 export function createQueueItems(fileList, state) {
   const files = Array.from(fileList).slice(0, 10);
 
-  return files.map((file, index) => {
-    const detected = detectFormat(file);
-    const actualFrom = detected === 'file' ? state.from : detected;
-    const output = chooseValidOutput(actualFrom, state.to);
+  return files
+    .map((file, index) => {
+      const detected = detectFormat(file);
 
-    return {
-      id: `${Date.now()}-${index}-${Math.random().toString(16).slice(2)}`,
-      file,
-      name: file.name,
-      size: file.size,
+      if (!isSupportedInputFormat(detected)) {
+        return null;
+      }
 
-      // actualFrom is the truth. It comes from uploaded file.
-      actualFrom,
-      from: actualFrom,
+      const actualFrom = detected;
+      const output = chooseValidOutput(actualFrom, state.to);
 
-      to: output,
-      status: 'ready',
-      progress: 0,
-      error: '',
-      settings: {},
-      downloadUrl: '',
-      downloadName: ''
-    };
-  });
+      return {
+        id: `${Date.now()}-${index}-${Math.random().toString(16).slice(2)}`,
+        file,
+        name: file.name,
+        size: file.size,
+
+        // actualFrom is the truth. It comes from uploaded file.
+        actualFrom,
+        from: actualFrom,
+
+        to: output,
+        status: 'ready',
+        progress: 0,
+        error: '',
+        settings: {},
+        downloadUrl: '',
+        downloadName: ''
+      };
+    })
+    .filter(Boolean);
 }
 
+export function isSupportedInputFormat(format) {
+  return Boolean(
+    format &&
+    format !== 'file' &&
+    formats[format] &&
+    Array.isArray(conversions[format]) &&
+    conversions[format].length
+  );
+}
 function chooseValidOutput(from, preferredTo) {
   const allowed = (conversions[from] || []).filter(output => output !== from);
 
@@ -59,4 +75,5 @@ function chooseValidOutput(from, preferredTo) {
 
   return allowed[0] || preferredTo;
 }
+
 

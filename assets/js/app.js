@@ -428,6 +428,17 @@ function handleFiles(fileList) {
   }
 
   const items = createQueueItems(incoming, state);
+  const skipped = incoming.length - items.length;
+
+  if (!items.length) {
+    notifyFormatLock('Unsupported file. Please upload PNG, JPG, JPEG, WEBP, AVIF, GIF, SVG, BMP, or ICO.');
+    elements.fileInput.value = '';
+    return;
+  }
+
+  if (skipped > 0) {
+    notifyFormatLock(`${skipped} unsupported file${skipped === 1 ? '' : 's'} skipped.`);
+  }
 
   state.queue = [...state.queue, ...items].slice(0, 10);
   elements.fileInput.value = '';
@@ -435,7 +446,6 @@ function handleFiles(fileList) {
   syncHeroToFirstQueueItem();
   renderAll();
 }
-
 function updateQueueOutput(id, output) {
   const item = state.queue.find(entry => entry.id === id);
   if (!item) return;
@@ -1237,4 +1247,5 @@ function sourceToastOverride(message) {
 }
 
 /* Upload source override end */
+
 
