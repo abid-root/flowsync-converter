@@ -264,7 +264,7 @@ function setFormats(from, to) {
 
 function swapFormats() {
   if (state.queue.length) {
-    notifyFormatLock('Source locked');
+    notifyFormatLock('Source format is locked to uploaded files. Change the output format instead.');
     return;
   }
 
@@ -283,7 +283,7 @@ function swapFormats() {
 
 function openPicker(mode) {
   if (mode === 'from' && state.queue.length) {
-    notifyFormatLock('Source locked');
+    notifyFormatLock('Source format is locked to the uploaded file. Remove files first to change input format.');
     return;
   }
 
@@ -316,7 +316,7 @@ function renderPicker() {
     select: format => {
       if (state.picker.mode === 'from') {
         if (state.queue.length) {
-          notifyFormatLock('Source locked');
+          notifyFormatLock('Source format is locked to uploaded files. Remove files first to change input format.');
           closePicker();
           return;
         }
@@ -416,7 +416,7 @@ function handleFiles(fileList) {
   const remaining = Math.max(0, 10 - state.queue.length);
 
   if (!remaining) {
-    notifyFormatLock('10-file limit reached');
+    notifyFormatLock('Free limit reached — 10 files per batch.');
     elements.fileInput.value = '';
     return;
   }
@@ -444,7 +444,7 @@ function updateQueueOutput(id, output) {
   const allowed = (conversions[actualFrom] || []).filter(entry => entry !== actualFrom);
 
   if (!allowed.includes(output)) {
-    notifyFormatLock('Choose another output');
+    notifyFormatLock('Choose a different output format from the uploaded file type.');
     return;
   }
 
@@ -1034,7 +1034,7 @@ function setupAddMoreLimitToast() {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    showBottomToast('10-file limit reached Upgrade option coming later.');
+    showBottomToast('Free limit reached — 10 files per batch. Upgrade option coming later.');
   }, true);
 }
 
@@ -1054,13 +1054,12 @@ function showBottomToast(message) {
   window.clearTimeout(showBottomToast.timer);
   showBottomToast.timer = window.setTimeout(() => {
     toast.classList.remove('show');
-  }, 1700);
+  }, 2800);
 }
 
 ensureZipButton();
 setupAddMoreLimitToast();
 /* ZIP download and toast final end */
-
 
 
 

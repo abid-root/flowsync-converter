@@ -1,4 +1,4 @@
-﻿import { conversions, formats } from './data.js';
+import { conversions, formats } from './data.js';
 
 export function bytesToSize(bytes) {
   if (!bytes) return '0 B';
@@ -25,38 +25,20 @@ export function fileCategory(format) {
 
 export function createQueueItems(fileList, state) {
   const files = Array.from(fileList).slice(0, 10);
-
   return files.map((file, index) => {
     const detected = detectFormat(file);
-    const actualFrom = detected === 'file' ? state.from : detected;
-    const output = chooseValidOutput(actualFrom, state.to);
-
+    const allowed = conversions[detected] || conversions[state.from] || [];
+    const output = allowed.includes(state.to) ? state.to : allowed[0] || state.to;
     return {
       id: `${Date.now()}-${index}-${Math.random().toString(16).slice(2)}`,
       file,
       name: file.name,
       size: file.size,
-
-      // actualFrom is the truth. It comes from uploaded file.
-      actualFrom,
-      from: actualFrom,
-
+      from: detected === 'file' ? state.from : detected,
       to: output,
       status: 'ready',
       progress: 0,
-      error: '',
-      settings: {},
-      downloadUrl: '',
-      downloadName: ''
+      settings: {}
     };
   });
 }
-
-function chooseValidOutput(from, preferredTo) {
-  const allowed = (conversions[from] || []).filter(output => output !== from);
-
-  if (allowed.includes(preferredTo)) return preferredTo;
-
-  return allowed[0] || preferredTo;
-}
-

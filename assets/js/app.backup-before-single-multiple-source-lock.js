@@ -247,27 +247,16 @@ function setCategory(category) {
 }
 
 function setFormats(from, to) {
-  if (state.queue.length) {
-    state.to = to;
-    syncQueueOutputWithCurrentTo();
-    renderAll();
-    return;
-  }
-
   state.from = from;
-  state.to = conversions[from]?.includes(to) && from !== to
+  state.to = conversions[from]?.includes(to)
     ? to
-    : firstValidOutput(from, to);
+    : (conversions[from]?.[0] || to || state.to);
 
+  syncQueueWithCurrentFormats();
   renderAll();
 }
 
 function swapFormats() {
-  if (state.queue.length) {
-    notifyFormatLock('Source locked');
-    return;
-  }
-
   if (conversions[state.to]?.includes(state.from)) {
     const nextFrom = state.to;
     const nextTo = state.from;
@@ -275,24 +264,17 @@ function swapFormats() {
     state.from = nextFrom;
     state.to = nextTo;
   } else {
-    state.to = firstValidOutput(state.from, state.to);
+    state.to = conversions[state.from]?.[0] || state.to;
   }
 
+  syncQueueWithCurrentFormats();
   renderAll();
 }
 
 function openPicker(mode) {
-  if (mode === 'from' && state.queue.length) {
-    notifyFormatLock('Source locked');
-    return;
-  }
-
   state.picker.mode = mode;
   state.picker.search = '';
-  state.picker.activeCategory = mode === 'to'
-    ? (formats[state.to]?.category || state.category)
-    : state.category;
-
+  state.picker.activeCategory = state.category;
   elements.pickerSearch.value = '';
   elements.picker.hidden = false;
   elements.pickerBackdrop.hidden = false;
@@ -315,20 +297,15 @@ function renderPicker() {
     },
     select: format => {
       if (state.picker.mode === 'from') {
-        if (state.queue.length) {
-          notifyFormatLock('Source locked');
-          closePicker();
-          return;
-        }
-
         state.from = format;
-        state.to = firstValidOutput(format, state.to);
+        state.to = conversions[format]?.includes(state.to)
+          ? state.to
+          : (conversions[format]?.[0] || state.to);
+
+        syncQueueWithCurrentFormats();
       } else {
         state.to = format;
-
-        if (state.queue.length) {
-          syncQueueOutputWithCurrentTo();
-        }
+        syncQueueOutputWithCurrentTo();
       }
 
       closePicker();
@@ -343,17 +320,15 @@ function syncQueueWithCurrentFormats() {
   state.queue.forEach(item => {
     revokeItemDownload(item);
 
-    const actualFrom = item.actualFrom || item.from;
+    item.from = state.from;
+    item.to = conversions[state.from]?.includes(state.to)
+      ? state.to
+      : (conversions[state.from]?.[0] || state.to);
 
-    item.actualFrom = actualFrom;
-    item.from = actualFrom;
-    item.to = firstValidOutput(actualFrom, state.to);
     item.status = 'ready';
     item.progress = 0;
     item.error = '';
   });
-
-  syncHeroToFirstQueueItem();
 }
 
 function syncQueueOutputWithCurrentTo() {
@@ -362,53 +337,15 @@ function syncQueueOutputWithCurrentTo() {
   state.queue.forEach(item => {
     revokeItemDownload(item);
 
-    const actualFrom = item.actualFrom || item.from;
+    item.to = conversions[item.from]?.includes(state.to)
+      ? state.to
+      : (conversions[item.from]?.[0] || item.to);
 
-    item.actualFrom = actualFrom;
-    item.from = actualFrom;
-    item.to = firstValidOutput(actualFrom, state.to);
     item.status = 'ready';
     item.progress = 0;
     item.error = '';
   });
-
-  syncHeroToFirstQueueItem();
 }
-
-/* Source format lock helpers start */
-function firstValidOutput(from, preferredTo) {
-  const allowed = (conversions[from] || []).filter(output => output !== from);
-
-  if (allowed.includes(preferredTo)) return preferredTo;
-
-  return allowed[0] || preferredTo;
-}
-
-function syncHeroToFirstQueueItem() {
-  const first = state.queue[0];
-
-  if (!first) return;
-
-  const actualFrom = first.actualFrom || first.from;
-  const to = firstValidOutput(actualFrom, first.to || state.to);
-
-  first.actualFrom = actualFrom;
-  first.from = actualFrom;
-  first.to = to;
-
-  state.from = actualFrom;
-  state.to = to;
-}
-
-function notifyFormatLock(message) {
-  if (typeof showBottomToast === 'function') {
-    showBottomToast(message);
-    return;
-  }
-
-  window.alert(message);
-}
-/* Source format lock helpers end */
 
 function handleFiles(fileList) {
   if (!fileList || !fileList.length) return;
@@ -416,7 +353,7 @@ function handleFiles(fileList) {
   const remaining = Math.max(0, 10 - state.queue.length);
 
   if (!remaining) {
-    notifyFormatLock('10-file limit reached');
+    showBottomToast('Free limit reached — 10 files per batch. Upgrade option coming later.');
     elements.fileInput.value = '';
     return;
   }
@@ -424,40 +361,35 @@ function handleFiles(fileList) {
   const incoming = Array.from(fileList).slice(0, remaining);
 
   if (fileList.length > remaining) {
-    notifyFormatLock(`Free limit: added ${remaining} file${remaining === 1 ? '' : 's'}. Maximum 10 files per batch.`);
+    showBottomToast(`Free limit: added ${remaining} file${remaining === 1 ? '' : 's'}. Maximum 10 files per batch.`);
   }
 
   const items = createQueueItems(incoming, state);
 
+  if (items.length) {
+    const first = items[0];
+
+    if (formats[first.from]) {
+      state.from = first.from;
+      state.to = conversions[first.from]?.includes(state.to)
+        ? state.to
+        : (conversions[first.from]?.[0] || state.to);
+    }
+  }
+
   state.queue = [...state.queue, ...items].slice(0, 10);
   elements.fileInput.value = '';
-
-  syncHeroToFirstQueueItem();
   renderAll();
 }
 
 function updateQueueOutput(id, output) {
   const item = state.queue.find(entry => entry.id === id);
   if (!item) return;
-
-  const actualFrom = item.actualFrom || item.from;
-  const allowed = (conversions[actualFrom] || []).filter(entry => entry !== actualFrom);
-
-  if (!allowed.includes(output)) {
-    notifyFormatLock('Choose another output');
-    return;
-  }
-
   revokeItemDownload(item);
-
-  item.actualFrom = actualFrom;
-  item.from = actualFrom;
   item.to = output;
   item.status = 'ready';
   item.progress = 0;
   item.error = '';
-
-  syncHeroToFirstQueueItem();
   renderAll(true);
 }
 
@@ -1034,7 +966,7 @@ function setupAddMoreLimitToast() {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    showBottomToast('10-file limit reached Upgrade option coming later.');
+    showBottomToast('Free limit reached — 10 files per batch. Upgrade option coming later.');
   }, true);
 }
 
@@ -1054,14 +986,12 @@ function showBottomToast(message) {
   window.clearTimeout(showBottomToast.timer);
   showBottomToast.timer = window.setTimeout(() => {
     toast.classList.remove('show');
-  }, 1700);
+  }, 2800);
 }
 
 ensureZipButton();
 setupAddMoreLimitToast();
 /* ZIP download and toast final end */
-
-
 
 
 
