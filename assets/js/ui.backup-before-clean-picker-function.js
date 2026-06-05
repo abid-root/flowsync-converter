@@ -99,6 +99,8 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
       return validOutputs.filter(format => categoryOf(format) === categoryKey);
     }
 
+    if (categoryKey === 'all') return Object.keys(formats);
+
     return categories[categoryKey]?.formats || [];
   }
 
@@ -109,9 +111,8 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
   let categoryKey = activeCategory || state.category;
 
   if (mode === 'to') {
-    const stillValid = availableCategories.some(([key]) => key === categoryKey);
-
-    if (!stillValid) {
+    const activeStillValid = availableCategories.some(([key]) => key === categoryKey);
+    if (!activeStillValid) {
       categoryKey = availableCategories[0]?.[0] || categoryOf(state.to);
     }
   }
@@ -125,12 +126,11 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
 
     return !normalizedSearch ||
       item.label.toLowerCase().includes(normalizedSearch) ||
-      item.title.toLowerCase().includes(normalizedSearch) ||
-      format.toLowerCase().includes(normalizedSearch);
+      item.title.toLowerCase().includes(normalizedSearch);
   });
 
   elements.pickerTitle.textContent = mode === 'to'
-    ? `Choose output for ${formats[state.from]?.label || state.from.toUpperCase()}`
+    ? `Choose output for ${formats[state.from].label}`
     : 'Choose input format';
 
   elements.pickerSubtitle.textContent = mode === 'to'
@@ -164,6 +164,56 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
     button.addEventListener('click', () => handlers.category(button.dataset.pickerCategory));
   });
 
+  elements.pickerFormats.querySelectorAll('[data-format]').forEach(button => {
+    button.addEventListener('click', () => handlers.select(button.dataset.format));
+  });
+}, elements, handlers) {
+  const categoryKey = activeCategory || state.category;
+  const categoryList = Object.entries(categories);
+  const validOutputs = conversions[state.from] || [];
+  const allFromFormats = categoryKey === 'all'
+    ? Object.keys(formats)
+    : (categories[categoryKey]?.formats || []);
+    const browserReadyImageInputs = new Set(['png', 'jpg', 'jpeg', 'webp']);
+  const source = mode === 'to'
+    ? validOutputs
+    : allFromFormats.filter(format => {
+        const item = formats[format];
+        if (!item) return false;
+        if (item.category === 'image') return browserReadyImageInputs.has(format);
+        return (conversions[format] || []).length > 0;
+      });
+  const normalizedSearch = search.trim().toLowerCase();
+  const visibleFormats = source.filter(format => {
+    const item = formats[format];
+    if (!item) return false;
+    return !normalizedSearch || item.label.toLowerCase().includes(normalizedSearch) || item.title.toLowerCase().includes(normalizedSearch);
+  });
+
+  elements.pickerTitle.textContent = mode === 'to' ? `Choose output for ${formats[state.from].label}` : 'Choose input format';
+  elements.pickerSubtitle.textContent = mode === 'to' ? 'Only possible outputs are shown.' : 'Pick a category, then choose a source format.';
+
+  elements.pickerCategories.innerHTML = categoryList.map(([key, item]) => `
+    <button class="picker-category ${key === categoryKey ? 'active' : ''}" data-picker-category="${key}">
+      <span>${escapeHtml(item.label)}</span><small>${item.formats.length}</small>
+    </button>
+  `).join('');
+
+  elements.pickerFormats.innerHTML = visibleFormats.length ? visibleFormats.map(format => {
+    const item = formats[format];
+    const selected = (mode === 'to' ? state.to : state.from) === format;
+    return `
+      <button class="format-chip ${selected ? 'active' : ''}" data-format="${format}">
+        <span>${formatIcon(format)}</span>
+        <strong>${escapeHtml(item.label)}</strong>
+        <small>${escapeHtml(item.title)}</small>
+      </button>
+    `;
+  }).join('') : '<p class="empty-message">No matching format found.</p>';
+
+  elements.pickerCategories.querySelectorAll('[data-picker-category]').forEach(button => {
+    button.addEventListener('click', () => handlers.category(button.dataset.pickerCategory));
+  });
   elements.pickerFormats.querySelectorAll('[data-format]').forEach(button => {
     button.addEventListener('click', () => handlers.select(button.dataset.format));
   });
@@ -355,7 +405,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
 
 
 

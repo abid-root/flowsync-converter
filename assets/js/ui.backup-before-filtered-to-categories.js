@@ -88,69 +88,40 @@ export function renderToolsPreview(elements) {
 }
 
 export function renderFormatPicker({ mode, state, search = '', activeCategory = null }, elements, handlers) {
+  const categoryKey = activeCategory || state.category;
+  const categoryList = Object.entries(categories);
   const validOutputs = conversions[state.from] || [];
-
-  function categoryOf(format) {
-    return formats[format]?.category || 'document';
-  }
-
-  function formatsForCategory(categoryKey) {
-    if (mode === 'to') {
-      return validOutputs.filter(format => categoryOf(format) === categoryKey);
-    }
-
-    return categories[categoryKey]?.formats || [];
-  }
-
-  const availableCategories = mode === 'to'
-    ? Object.entries(categories).filter(([key]) => formatsForCategory(key).length > 0)
-    : Object.entries(categories);
-
-  let categoryKey = activeCategory || state.category;
-
-  if (mode === 'to') {
-    const stillValid = availableCategories.some(([key]) => key === categoryKey);
-
-    if (!stillValid) {
-      categoryKey = availableCategories[0]?.[0] || categoryOf(state.to);
-    }
-  }
-
-  const source = formatsForCategory(categoryKey);
+  const allFromFormats = categoryKey === 'all'
+    ? Object.keys(formats)
+    : (categories[categoryKey]?.formats || []);
+    const browserReadyImageInputs = new Set(['png', 'jpg', 'jpeg', 'webp']);
+  const source = mode === 'to'
+    ? validOutputs
+    : allFromFormats.filter(format => {
+        const item = formats[format];
+        if (!item) return false;
+        if (item.category === 'image') return browserReadyImageInputs.has(format);
+        return (conversions[format] || []).length > 0;
+      });
   const normalizedSearch = search.trim().toLowerCase();
-
   const visibleFormats = source.filter(format => {
     const item = formats[format];
     if (!item) return false;
-
-    return !normalizedSearch ||
-      item.label.toLowerCase().includes(normalizedSearch) ||
-      item.title.toLowerCase().includes(normalizedSearch) ||
-      format.toLowerCase().includes(normalizedSearch);
+    return !normalizedSearch || item.label.toLowerCase().includes(normalizedSearch) || item.title.toLowerCase().includes(normalizedSearch);
   });
 
-  elements.pickerTitle.textContent = mode === 'to'
-    ? `Choose output for ${formats[state.from]?.label || state.from.toUpperCase()}`
-    : 'Choose input format';
+  elements.pickerTitle.textContent = mode === 'to' ? `Choose output for ${formats[state.from].label}` : 'Choose input format';
+  elements.pickerSubtitle.textContent = mode === 'to' ? 'Only possible outputs are shown.' : 'Pick a category, then choose a source format.';
 
-  elements.pickerSubtitle.textContent = mode === 'to'
-    ? 'Only possible outputs are shown.'
-    : 'Pick a category, then choose a source format.';
-
-  elements.pickerCategories.innerHTML = availableCategories.map(([key, item]) => {
-    const count = formatsForCategory(key).length;
-
-    return `
-      <button class="picker-category ${key === categoryKey ? 'active' : ''}" data-picker-category="${key}">
-        <span>${escapeHtml(item.label)}</span><small>${count}</small>
-      </button>
-    `;
-  }).join('');
+  elements.pickerCategories.innerHTML = categoryList.map(([key, item]) => `
+    <button class="picker-category ${key === categoryKey ? 'active' : ''}" data-picker-category="${key}">
+      <span>${escapeHtml(item.label)}</span><small>${item.formats.length}</small>
+    </button>
+  `).join('');
 
   elements.pickerFormats.innerHTML = visibleFormats.length ? visibleFormats.map(format => {
     const item = formats[format];
     const selected = (mode === 'to' ? state.to : state.from) === format;
-
     return `
       <button class="format-chip ${selected ? 'active' : ''}" data-format="${format}">
         <span>${formatIcon(format)}</span>
@@ -163,7 +134,6 @@ export function renderFormatPicker({ mode, state, search = '', activeCategory = 
   elements.pickerCategories.querySelectorAll('[data-picker-category]').forEach(button => {
     button.addEventListener('click', () => handlers.category(button.dataset.pickerCategory));
   });
-
   elements.pickerFormats.querySelectorAll('[data-format]').forEach(button => {
     button.addEventListener('click', () => handlers.select(button.dataset.format));
   });
@@ -355,8 +325,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
 
 
 
