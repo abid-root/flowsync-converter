@@ -3,19 +3,12 @@ import { bytesToSize } from './upload.js';
 
 const iconMap = {
   image: 'M4 5.5A2.5 2.5 0 0 1 6.5 3h6.1L20 10.4v8.1a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18.5v-13Zm9 0V10h4.5L13 5.5ZM7 17h10l-3.1-4.1-2.3 2.8-1.6-2.1L7 17Zm1.5-5.8a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8Z',
-  video: 'M5 5h10a2 2 0 0 1 2 2v1.2l3-1.8v9.2l-3-1.8V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm3.5 3.2v7l5.5-3.5-5.5-3.5Z',
-  audio: 'M9 4h9v3H12v8.6A3.2 3.2 0 1 1 9 12.4V4Z',
-  pdf: 'M6 3h7l5 5v13H6V3Zm7 1.5V9h4.5L13 4.5ZM8.3 16.8c.9-1.3 1.5-2.7 1.8-4.1-.4-1.3-.3-2.2.3-2.5.5-.2 1 .2 1.1.9.1.6 0 1.2-.2 1.8.4.9.9 1.7 1.5 2.3.9-.2 1.7-.2 2.2.1.5.4.3 1-.2 1.2-.6.2-1.4 0-2.2-.6-1 .2-2 .5-3 .9-.7 1-1.4 1.5-2 1.4-.5-.1-.7-.6-.4-1 .2-.2.5-.4 1.1-.4Z',
-  document: 'M6 3h7l5 5v13H6V3Zm7 1.5V9h4.5L13 4.5ZM8 13h8v1.5H8V13Zm0 3h8v1.5H8V16Zm0-6h5v1.5H8V10Z',
-  presentation: 'M4 5h16v10H4V5Zm2 2v6h12V7H6Zm5 8h2v3h4v2H7v-2h4v-3Z',
-  archive: 'M7 3h10v18H7V3Zm2 2v2h2V5H9Zm2 2v2h2V7h-2Zm-2 2v2h2V9H9Zm2 2v2h2v-2h-2Zm-2 2v2h2v-2H9Z',
-  ebook: 'M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 1-2-2V4Zm3 3v9h8V7H8Z',
-  color: 'M12 3a9 9 0 0 0 0 18h1.1a1.8 1.8 0 0 0 1.3-3l-.7-.7a1 1 0 0 1 .7-1.7H16a5 5 0 0 0 0-10H12Zm-4 7a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 8 10Zm3-3a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 11 7Zm-4 7a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 7 14Zm5-1a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 12 13Z'
+  pdf: 'M6 3h7l5 5v13H6V3Zm7 1.5V9h4.5L13 4.5ZM8.3 16.8c.9-1.3 1.5-2.7 1.8-4.1-.4-1.3-.3-2.2.3-2.5.5-.2 1 .2 1.1.9.1.6 0 1.2-.2 1.8.4.9.9 1.7 1.5 2.3.9-.2 1.7-.2 2.2.1.5.4.3 1-.2 1.2-.6.2-1.4 0-2.2-.6-1 .2-2 .5-3 .9-.7 1-1.4 1.5-2 1.4-.5-.1-.7-.6-.4-1 .2-.2.5-.4 1.1-.4Z'
 };
 
 export function formatIcon(format) {
-  const icon = formats[format]?.icon || formats[format]?.category || 'document';
-  const path = iconMap[icon] || iconMap.document;
+  const icon = formats[format]?.icon || formats[format]?.category || 'image';
+  const path = iconMap[icon] || iconMap.image;
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"/></svg>`;
 }
 
@@ -236,7 +229,6 @@ function optionsForCategory(category, item) {
   const marginValue = String(item.settings.margin || 'none');
   const output = item.to;
   const outputLabel = escapeHtml(formats[item.to]?.label || 'Output');
-  const outputCategory = formats[item.to]?.category || category || 'image';
 
   function selected(current, value) {
     return current === value ? 'selected' : '';
@@ -297,16 +289,6 @@ function optionsForCategory(category, item) {
     `;
   }
 
-  function futureOptionsNote(typeLabel) {
-    return `
-      <div class="field future-field">
-        <span>${escapeHtml(typeLabel)} options</span>
-        <div class="future-pill">Coming later</div>
-        <small>Advanced settings will appear when this engine is added.</small>
-      </div>
-    `;
-  }
-
   if (output === 'pdf') {
     return `
       <label class="field">
@@ -359,27 +341,6 @@ function optionsForCategory(category, item) {
       ${widthField()}
       ${heightField()}
       ${removeBackgroundLater()}
-      ${renameField()}
-    `;
-  }
-
-  if (outputCategory === 'video') {
-    return `
-      ${futureOptionsNote('Video')}
-      ${renameField()}
-    `;
-  }
-
-  if (outputCategory === 'audio') {
-    return `
-      ${futureOptionsNote('Audio')}
-      ${renameField()}
-    `;
-  }
-
-  if (['document', 'presentation', 'archive', 'ebook'].includes(outputCategory)) {
-    return `
-      ${futureOptionsNote(formats[item.to]?.label || 'File')}
       ${renameField()}
     `;
   }

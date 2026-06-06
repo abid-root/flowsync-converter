@@ -31,7 +31,7 @@ export function initialStateFromPath() {
   if (pair) {
     const fallback = conversions[pair.from]?.[0] || pair.to;
     return {
-      category: formats[pair.from].category === 'document' && pair.from === 'pdf' ? 'pdf' : formats[pair.from].category,
+      category: formats[pair.from].category,
       from: pair.from,
       to: conversions[pair.from]?.includes(pair.to) ? pair.to : fallback
     };

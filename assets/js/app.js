@@ -266,8 +266,7 @@ function normalizeState() {
     [state.from, state.to] = categoryDefaults.image;
     state.category = 'image';
   }
-  const currentCategory = formats[state.from].category;
-  state.category = currentCategory === 'document' && state.from === 'pdf' ? 'pdf' : currentCategory;
+  state.category = formats[state.from].category;
   const allowed = conversions[state.from] || [];
   if (!allowed.includes(state.to)) state.to = allowed[0] || state.to;
 }

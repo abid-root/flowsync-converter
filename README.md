@@ -6,26 +6,25 @@ A fresh frontend prototype for a professional file conversion website.
 
 - Clean converter layout inspired by professional converter tools, but not a copy.
 - Dark and light theme toggle.
-- Smart service dropdown: Images, Video, Audio, PDF, Documents, Presentations.
+- Smart service dropdown: Image, PDF, and Icon tools.
 - Smart FROM / TO format picker.
 - More Tools modal with popular conversions and category cards.
 - Upload up to 10 files in the free version.
 - Queue view after files are selected.
-- Per-file options modal for image/video/audio/PDF/document/presentation settings.
-- Generated static folders for every supported SEO URL, for example `/png-to-jpg/`.
-- Browser-side PNG, JPG, and WEBP image conversion.
+- Per-file options modal for image, PDF, and icon output settings.
+- Static folders for generated SEO URLs, for example `/png-to-jpg/`.
+- Browser-side image conversion for supported image, PDF, and ICO outputs.
 - Sitemap and robots files for search indexing.
 
 ## Important note
 
-This is the frontend and interaction structure. The image conversion engine is connected for PNG, JPG, and WEBP in the browser. Other conversion engines still need to be connected.
+This is the frontend and interaction structure. Supported image inputs can convert to image, PDF, and ICO outputs in the browser. Additional engines can be connected later.
 
 Recommended backend direction:
 
 - Image: browser Canvas APIs, Sharp, or Squoosh-style encoders.
-- Video and audio: FFmpeg backend or FFmpeg WASM for limited browser use.
-- Documents and presentations: LibreOffice/headless conversion or a document conversion API.
 - PDF tools: PDF.js, pdf-lib, Poppler, or backend services depending on the feature.
+- Icon tools: browser ICO packaging for simple favicons, or backend services for advanced icon sets.
 
 ## Folder structure
 
@@ -50,16 +49,6 @@ png-to-webp/index.html
 image-converter/index.html
 ...
 ```
-
-## Regenerate SEO pages
-
-All public pages are generated from `scripts/generate-pages.mjs`:
-
-```bash
-node scripts/generate-pages.mjs
-```
-
-The generator creates clean folder URLs, `sitemap.xml`, and `robots.txt`.
 
 ## How to preview locally
 

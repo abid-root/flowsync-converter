@@ -14,6 +14,56 @@
   padding: 0;
 }
 
+/* Mobile menu overlay: opens above page content without pushing the hero down. */
+@media (max-width: 920px) {
+  .topbar-wrap,
+  header.topbar-wrap {
+    overflow: visible !important;
+    z-index: 140 !important;
+  }
+
+  .mobile-menu {
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+    left: 50% !important;
+    z-index: 145 !important;
+    width: min(100vw, var(--wrap)) !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    display: grid !important;
+    gap: 0 !important;
+    padding: 12px 0 14px !important;
+    border-radius: 0 0 18px 18px !important;
+    border: 1px solid color-mix(in srgb, var(--line) 82%, transparent) !important;
+    background:
+      radial-gradient(circle at 100% 60%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 36%),
+      color-mix(in srgb, var(--panel-strong) 98%, transparent) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.54) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  .mobile-menu[hidden] {
+    display: none !important;
+  }
+
+  .mobile-menu a,
+  .mobile-menu button {
+    min-height: 56px !important;
+    border-radius: 0 !important;
+    padding: 0 clamp(18px, 4vw, 28px) !important;
+    font-size: 1.05rem !important;
+    font-weight: 900 !important;
+  }
+
+  .mobile-menu button[data-open-tools] {
+    min-height: 58px !important;
+    margin-top: 6px !important;
+    border-width: 0 !important;
+    border-radius: 0 0 16px 16px !important;
+    background: linear-gradient(135deg, var(--primary), var(--primary-2)) !important;
+  }
+}
+
 .mobile-menu-button span {
   display: block;
   width: 18px;
@@ -1314,5 +1364,27 @@
   body:has(#queuePanel:not([hidden])) #fromCard strong,
   body:has(#queuePanel:not([hidden])) #toCard strong {
     font-size: 0.78rem !important;
+  }
+}
+
+/* Keep the phone menu as a floating window above content. */
+@media (max-width: 700px) {
+  .mobile-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 50% !important;
+    width: calc(100vw - 28px) !important;
+    max-width: 680px !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    overflow: hidden !important;
+    border-radius: 0 0 22px 22px !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    border-bottom-width: 1px !important;
+  }
+
+  .mobile-menu button[data-open-tools] {
+    border-radius: 0 0 20px 20px !important;
   }
 }
