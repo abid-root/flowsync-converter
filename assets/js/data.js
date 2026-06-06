@@ -84,3 +84,4 @@ export const formatNotes = {
   ico: 'An icon format commonly used for website favicons and desktop-style icons.'
 };
 
+

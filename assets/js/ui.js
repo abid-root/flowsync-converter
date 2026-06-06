@@ -52,23 +52,31 @@ function formatCardMarkup(format, eyebrow) {
 
 export function renderFormatInfo(state, elements) {
   const items = [state.from, state.to].filter(Boolean);
+
   elements.formatInfo.innerHTML = items.map(format => {
     const data = formats[format];
     const note = formatNotes[format] || `${data.label} is a common file format used in ${categories[data.category]?.label?.toLowerCase() || 'file'} workflows.`;
-    const route = categories[data.category]?.route || 'tools';
+
     return `
       <article class="info-card">
         <div class="info-icon">${formatIcon(format)}</div>
         <div>
           <h3>${escapeHtml(data.label)} <span>- ${escapeHtml(data.title)}</span></h3>
           <p>${escapeHtml(note)}</p>
-          <a href="/${route}/">${escapeHtml(data.label)} tools &rarr;</a>
+          <a href="${formatDetailHref(format)}">${escapeHtml(data.label)} details &rarr;</a>
         </div>
       </article>
     `;
   }).join('');
 }
 
+function formatDetailHref(format) {
+  const path = window.location.pathname.replace(/\/index\.html$/, '/');
+  const isNestedPage = /\/(?:tools|image-converter|pdf-converter|formats|[a-z0-9]+-to-[a-z0-9]+)\/?$/i.test(path);
+  const prefix = isNestedPage ? '../' : '';
+
+  return `${prefix}formats/#format-${encodeURIComponent(format)}`;
+}
 export function renderToolsPreview(elements) {
   elements.toolsPreview.innerHTML = Object.entries(categories)
     .filter(([key]) => ['image', 'pdf', 'icon'].includes(key))
@@ -406,18 +414,6 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

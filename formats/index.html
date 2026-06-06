@@ -1,0 +1,262 @@
+﻿<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image, PDF, and Icon Format Guide | FlowSync</title>
+    <meta name="description" content="Learn the basic use, strengths, limits, and official references for PNG, JPG, JPEG, WEBP, AVIF, GIF, SVG, BMP, ICO, and PDF formats.">
+    <link rel="canonical" href="/formats/">
+    <link rel="icon" type="image/webp" href="../assets/icons/blackone.webp" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/webp" href="../assets/icons/whiteone.webp" media="(prefers-color-scheme: light)">
+    <link rel="shortcut icon" type="image/webp" href="../assets/icons/blackone.webp">
+    <link rel="stylesheet" href="../assets/css/main.css">
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar-wrap">
+        <div class="container topbar">
+          <a class="brand" href="../" aria-label="FlowSync home">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-text"><strong>FlowSync</strong><span>format guide</span></span>
+          </a>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a href="../">Home</a>
+            <a href="../image-converter/">Images</a>
+            <a href="../pdf-converter/">PDF</a>
+            <a href="../formats/">Guide</a>
+            <a href="../tools/">Tools</a>
+          </nav>
+          <div class="nav-actions">
+            <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle theme">&#9680;</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="container format-guide-hero">
+          <span class="kicker">Format guide</span>
+          <h1>Image, PDF, and icon format details</h1>
+          <p>
+            Quick explanations for every format used in FlowSync. Each format name links to a larger trusted reference so users can learn more.
+          </p>
+
+          <div class="format-jump-list" aria-label="Jump to format">
+            <a href="#format-png">PNG</a>
+            <a href="#format-jpg">JPG</a>
+            <a href="#format-jpeg">JPEG</a>
+            <a href="#format-webp">WEBP</a>
+            <a href="#format-avif">AVIF</a>
+            <a href="#format-gif">GIF</a>
+            <a href="#format-svg">SVG</a>
+            <a href="#format-bmp">BMP</a>
+            <a href="#format-ico">ICO</a>
+            <a href="#format-pdf">PDF</a>
+          </div>
+        </section>
+
+        <section class="container format-guide-grid">
+          <article class="format-guide-card" id="format-png">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">PNG</span>
+              <div>
+                <h2><a href="https://www.w3.org/TR/png/" target="_blank" rel="noopener noreferrer">PNG</a> <span>Portable Network Graphic</span></h2>
+                <p class="format-main">PNG is a lossless image format. It keeps sharp edges, clean text, and transparent backgrounds without losing detail.</p>
+                <p class="format-extra">Use PNG when the image has UI elements, screenshots, logos, icons, or transparent parts. PNG files can be larger than JPG, but the quality stays cleaner for graphics.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Transparent graphics, UI images, screenshots, clean logos.</span></li>
+              <li><strong>Not best for</strong><span>Large photo galleries where small size matters more.</span></li>
+              <li><strong>Quality style</strong><span>Lossless, so it keeps original detail better than JPG.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert PNG to WEBP, JPG, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-jpg">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">JPG</span>
+              <div>
+                <h2><a href="https://jpeg.org/jpeg/" target="_blank" rel="noopener noreferrer">JPG</a> <span>JPEG Image</span></h2>
+                <p class="format-main">JPG is one of the most common photo formats. It compresses images to reduce file size, which makes it useful for websites and sharing.</p>
+                <p class="format-extra">JPG is good when the image is a real photo or has many colors. It does not support transparency, and too much compression can make the image look blurry or blocky.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Photos, web images, social uploads, smaller file size.</span></li>
+              <li><strong>Not best for</strong><span>Transparent logos, icons, or sharp UI screenshots.</span></li>
+              <li><strong>Quality style</strong><span>Lossy compression, smaller size with some quality loss.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert JPG to WEBP, PNG, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-jpeg">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">JPEG</span>
+              <div>
+                <h2><a href="https://jpeg.org/jpeg/" target="_blank" rel="noopener noreferrer">JPEG</a> <span>JPEG Image</span></h2>
+                <p class="format-main">JPEG and JPG usually mean the same format. The difference is mainly the file extension name, not the image technology.</p>
+                <p class="format-extra">Use JPEG when you need a common photo format that almost every device, browser, and app can open. It is a safe choice for compatibility.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Photos, camera images, product pictures, general web use.</span></li>
+              <li><strong>Not best for</strong><span>Transparent images or text-heavy screenshots.</span></li>
+              <li><strong>Compatibility</strong><span>Very high support across browsers, phones, and software.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert JPEG to WEBP, PNG, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-webp">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">WEBP</span>
+              <div>
+                <h2><a href="https://developers.google.com/speed/webp" target="_blank" rel="noopener noreferrer">WEBP</a> <span>Web Picture Format</span></h2>
+                <p class="format-main">WEBP is a modern image format made for the web. It can keep good quality while making files smaller than PNG or JPG in many cases.</p>
+                <p class="format-extra">WEBP is useful for faster websites because smaller images load quicker. It supports transparency and can be used for both photo-like and graphic-like images.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Fast websites, smaller image files, modern web pages.</span></li>
+              <li><strong>Not best for</strong><span>Older apps or systems that do not support WEBP.</span></li>
+              <li><strong>Quality style</strong><span>Can be lossy or lossless depending on export settings.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert WEBP to PNG, JPG, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-avif">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">AVIF</span>
+              <div>
+                <h2><a href="https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types#avif_image" target="_blank" rel="noopener noreferrer">AVIF</a> <span>AV1 Image Format</span></h2>
+                <p class="format-main">AVIF is a newer image format designed for strong compression. It can create very small files while keeping impressive quality.</p>
+                <p class="format-extra">AVIF is good for modern websites, but it is not always the safest format for older tools. Convert AVIF to PNG or JPG when you need broader support.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Modern web images, small file size, high compression.</span></li>
+              <li><strong>Not best for</strong><span>Older apps, older devices, or maximum compatibility.</span></li>
+              <li><strong>Quality style</strong><span>Very efficient compression for photos and web visuals.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert AVIF to PNG, JPG, WEBP, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-gif">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">GIF</span>
+              <div>
+                <h2><a href="https://www.w3.org/Graphics/GIF/spec-gif89a.txt" target="_blank" rel="noopener noreferrer">GIF</a> <span>Graphics Interchange Format</span></h2>
+                <p class="format-main">GIF is an older image format commonly used for simple animations. It supports animation, but the color range is limited compared with modern formats.</p>
+                <p class="format-extra">In FlowSync, GIF conversion currently works as a still snapshot, usually the first frame. That keeps the tool lightweight and browser-based.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Simple animations, small graphic loops, old web compatibility.</span></li>
+              <li><strong>Not best for</strong><span>High-quality photos or modern video-like animation.</span></li>
+              <li><strong>Important note</strong><span>FlowSync exports GIF as a still snapshot, not full animation.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert GIF snapshot to PNG, JPG, WEBP, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-svg">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">SVG</span>
+              <div>
+                <h2><a href="https://developer.mozilla.org/en-US/docs/Web/SVG" target="_blank" rel="noopener noreferrer">SVG</a> <span>Scalable Vector Graphic</span></h2>
+                <p class="format-main">SVG is a vector image format. Instead of storing pixels like JPG or PNG, it describes shapes, paths, and text using code.</p>
+                <p class="format-extra">SVG stays sharp at any size, which makes it great for logos, icons, diagrams, and web graphics. Convert SVG to PNG or JPG when you need a normal image file.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Logos, icons, simple illustrations, scalable graphics.</span></li>
+              <li><strong>Not best for</strong><span>Complex photos or heavy raster images.</span></li>
+              <li><strong>Special strength</strong><span>Can scale up or down without becoming blurry.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert SVG to PNG, JPG, WEBP, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-bmp">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">BMP</span>
+              <div>
+                <h2><a href="https://learn.microsoft.com/en-us/windows/win32/gdi/bitmap-storage" target="_blank" rel="noopener noreferrer">BMP</a> <span>Bitmap Image</span></h2>
+                <p class="format-main">BMP is an older bitmap image format often linked with Windows systems. It can store image data with little or no compression.</p>
+                <p class="format-extra">BMP files are often larger than PNG, JPG, or WEBP. Convert BMP into a modern format when you need smaller files or better web compatibility.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Older Windows workflows and basic bitmap storage.</span></li>
+              <li><strong>Not best for</strong><span>Modern web pages or small upload sizes.</span></li>
+              <li><strong>File size</strong><span>Can be large because compression is limited.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert BMP to PNG, JPG, WEBP, PDF, and ICO.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-ico">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">ICO</span>
+              <div>
+                <h2><a href="https://learn.microsoft.com/en-us/windows/apps/design/style/iconography/app-icon-construction" target="_blank" rel="noopener noreferrer">ICO</a> <span>Icon File</span></h2>
+                <p class="format-main">ICO is an icon file format used for favicons and desktop-style icons. Websites often use ICO files for browser tab icons.</p>
+                <p class="format-extra">ICO is not for normal photos. It is best when you need a small icon file for a website, app shortcut, or system-style icon.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Favicons, app icons, browser tab icons, shortcut icons.</span></li>
+              <li><strong>Not best for</strong><span>Photos, banners, screenshots, or large visuals.</span></li>
+              <li><strong>Common use</strong><span>Website favicon and app-style icon output.</span></li>
+              <li><strong>FlowSync use</strong><span>Convert ICO to PNG, JPG, WEBP, and PDF.</span></li>
+            </ul>
+          </article>
+
+          <article class="format-guide-card" id="format-pdf">
+            <div class="format-guide-top">
+              <span class="format-guide-icon">PDF</span>
+              <div>
+                <h2><a href="https://www.adobe.com/acrobat/about-adobe-pdf.html" target="_blank" rel="noopener noreferrer">PDF</a> <span>Portable Document Format</span></h2>
+                <p class="format-main">PDF is a document format made to keep layout stable across devices. It is useful when an image needs to be shared as a printable or document-style file.</p>
+                <p class="format-extra">FlowSync uses PDF mainly as an output format for images. It is helpful for scans, receipts, image pages, assignments, and simple document sharing.</p>
+              </div>
+            </div>
+            <ul class="format-facts">
+              <li><strong>Best for</strong><span>Documents, scans, printable pages, fixed layouts.</span></li>
+              <li><strong>Not best for</strong><span>Editing image pixels or keeping transparent image layers.</span></li>
+              <li><strong>Common use</strong><span>Share images as document pages.</span></li>
+              <li><strong>FlowSync use</strong><span>Export image formats into PDF.</span></li>
+            </ul>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer" id="contact">
+        <div class="container footer-grid">
+          <div>
+            <a class="brand" href="../">
+              <span class="brand-mark" aria-hidden="true"></span>
+              <span class="brand-text"><strong>FlowSync</strong><span>file forge</span></span>
+            </a>
+            <p>Organized converter UI for image, PDF, and icon tools.</p>
+          </div>
+          <div><h4>Menu</h4><a href="../">Home</a><a href="../tools/">Tools</a><a href="../sitemap.xml">Sitemap</a></div>
+          <div><h4>Guides</h4><a href="#format-png">PNG</a><a href="#format-webp">WEBP</a><a href="#format-pdf">PDF</a></div>
+          <div><h4>Tools</h4><a href="../image-converter/">Image converter</a><a href="../pdf-converter/">PDF converter</a>
+            <a href="../formats/">Guide</a><a href="../png-to-ico/">Image to ICO</a></div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const savedTheme = localStorage.getItem('flowsync-theme');
+      document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const html = document.documentElement;
+        html.dataset.theme = html.dataset.theme === 'light' ? 'dark' : 'light';
+        localStorage.setItem('flowsync-theme', html.dataset.theme || 'dark');
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
