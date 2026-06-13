@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://abid-root.github.io/coldboot-convarter/sitemap.xml
+
+Sitemap: https://abid-root.github.io/coldboot-converter/sitemap.xml

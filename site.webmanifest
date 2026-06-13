@@ -1,7 +1,7 @@
 {
-  "name": "FlowSync FileForge Converter",
-  "short_name": "FlowSync Converter",
-  "description": "Convert images, PDFs and icon files with a clean browser-first FlowSync tool.",
+  "name": "FlowSync File Converter",
+  "short_name": "FlowSync",
+  "description": "Convert image, PDF, and icon files with a clean browser-first FlowSync tool.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -15,7 +15,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "assets/common/favicon-192.png",
+      "src": "assets/common/favicon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

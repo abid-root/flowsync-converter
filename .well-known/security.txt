@@ -1,4 +1,4 @@
-Contact: mailto:abidhasan2348@gmail.com
-Preferred-Languages: en, bn
-Canonical: https://abid-root.github.io/coldboot-convarter/.well-known/security.txt
-Policy: https://abid-root.github.io/coldboot-convarter/
+Contact: mailto:abid.hasan@tuta.io
+Preferred-Languages: en
+Canonical: https://abid-root.github.io/coldboot-converter/.well-known/security.txt
+Expires: 2027-06-13T00:00:00Z
